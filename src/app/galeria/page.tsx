@@ -80,17 +80,7 @@ export default function Galeria() {
     <div style={{ fontFamily:'sans-serif', background:'#050d1a', minHeight:'100vh', color:'#c8e0f4' }}>
       <style>{`* { margin:0; padding:0; box-sizing:border-box; } ::-webkit-scrollbar{width:3px} ::-webkit-scrollbar-thumb{background:#00cfff22}`}</style>
 
-      {/* NAV */}
-      <nav style={{ background:'rgba(5,13,26,0.96)', borderBottom:'1px solid #0d2040', padding:'0 5%', height:58, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-        <span style={{ fontWeight:800, fontSize:20, color:'#e8f4ff' }}>Z<span style={{ color:'#00cfff' }}>y</span>oku</span>
-        <div style={{ display:'flex', gap:16, alignItems:'center' }}>
-          <a href="/" style={{ color:'#3a6688', fontSize:13, textDecoration:'none' }}>Inicio</a>
-          <span style={{ color:'#00cfff', fontSize:13, borderBottom:'1px solid #00cfff44', paddingBottom:2 }}>Galería</span>
-          <a href="/comunidad" style={{ color:'#3a6688', fontSize:13, textDecoration:'none' }}>Comunidad</a>
-          <a href="/perfil" style={{ color:'#3a6688', fontSize:13, textDecoration:'none' }}>Perfil</a>
-        </div>
-        {user && <img src={user.user_metadata.avatar_url} style={{ width:32, height:32, borderRadius:'50%', border:'2px solid #00cfff44' }} />}
-      </nav>
+
 
       <div style={{ maxWidth:1200, margin:'0 auto', padding:'32px 3%' }}>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:32 }}>

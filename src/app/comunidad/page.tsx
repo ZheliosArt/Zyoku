@@ -69,18 +69,7 @@ export default function Comunidad() {
     <div style={{ fontFamily:'sans-serif', background:'#050d1a', minHeight:'100vh', color:'#c8e0f4' }}>
       <style>{`* { margin:0; padding:0; box-sizing:border-box; } ::-webkit-scrollbar{width:3px} ::-webkit-scrollbar-thumb{background:#00cfff22}`}</style>
 
-      {/* NAV */}
-      <nav style={{ background:'rgba(5,13,26,0.96)', borderBottom:'1px solid #0d2040', padding:'0 5%', height:58, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-        <span style={{ fontWeight:800, fontSize:20, color:'#e8f4ff' }}>Z<span style={{ color:'#00cfff' }}>y</span>oku</span>
-        <div style={{ display:'flex', gap:16, alignItems:'center' }}>
-          <a href="/" style={{ color:'#3a6688', fontSize:13, textDecoration:'none' }}>Inicio</a>
-          <a href="/perfil" style={{ color:'#3a6688', fontSize:13, textDecoration:'none' }}>Perfil</a>
-          <span style={{ color:'#00cfff', fontSize:13, borderBottom:'1px solid #00cfff44', paddingBottom:2 }}>Comunidad</span>
-        </div>
-        {user && <div style={{ width:32, height:32, borderRadius:'50%', background:'#00cfff22', border:'2px solid #00cfff44', overflow:'hidden' }}>
-          <img src={user.user_metadata.avatar_url} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
-        </div>}
-      </nav>
+      
 
       <div style={{ maxWidth:1100, margin:'0 auto', padding:'32px 3%', display:'grid', gridTemplateColumns:'200px 1fr', gap:32 }}>
 
