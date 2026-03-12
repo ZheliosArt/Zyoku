@@ -15,6 +15,7 @@ export default function Galeria() {
   const [preview, setPreview]     = useState<string | null>(null)
   const [subiendo, setSubiendo]   = useState(false)
   const [likesData, setLikesData] = useState<Record<number, boolean>>({})
+  const [obraSeleccionada, setObraSeleccionada] = useState<any>(null)
 
   useEffect(() => {
     const cargar = async () => {
@@ -137,16 +138,19 @@ export default function Galeria() {
         ) : (
           <div style={{ columns:'3 280px', gap:16 }}>
             {obras.map(obra => (
-              <div key={obra.id} style={{ breakInside:'avoid', marginBottom:16, borderRadius:14, overflow:'hidden', border:'1px solid #0d2040', background:'#0a1628', position:'relative' }}
+              <div
+                key={obra.id}
+                style={{ breakInside:'avoid', marginBottom:16, borderRadius:14, overflow:'hidden', border:'1px solid #0d2040', background:'#0a1628', position:'relative', cursor:'zoom-in' }}
                 onMouseEnter={e => (e.currentTarget.querySelector('.overlay') as HTMLElement)?.style.setProperty('opacity','1')}
                 onMouseLeave={e => (e.currentTarget.querySelector('.overlay') as HTMLElement)?.style.setProperty('opacity','0')}
+                onClick={() => setObraSeleccionada(obra)}
               >
                 <img src={obra.imagen_url} style={{ width:'100%', display:'block' }} />
                 <div className="overlay" style={{ position:'absolute', inset:0, background:'linear-gradient(to top, #050d1acc, transparent)', opacity:0, transition:'opacity 0.3s', display:'flex', flexDirection:'column', justifyContent:'flex-end', padding:14 }}>
                   <p style={{ color:'#e8f4ff', fontWeight:700, fontSize:14, marginBottom:4 }}>{obra.titulo}</p>
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                     <span style={{ color:'#3a6688', fontSize:12 }}>@{obra.Usuarios?.username}</span>
-                    <button onClick={() => darLike(obra)} style={{
+                    <button onClick={e => { e.stopPropagation(); darLike(obra) }} style={{
                       background:'none', border:'none',
                       color: likesData[obra.id] ? '#ff6b9d' : '#c8e0f4',
                       fontSize:13, cursor:'pointer', display:'flex', alignItems:'center', gap:4,
@@ -163,6 +167,7 @@ export default function Galeria() {
         )}
       </div>
 
+      {/* Modal subir obra */}
       {showModal && (
         <div style={{ position:'fixed', inset:0, zIndex:200, display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}>
           <div onClick={() => setShowModal(false)} style={{ position:'absolute', inset:0, background:'#000000bb', backdropFilter:'blur(8px)' }}/>
@@ -207,6 +212,49 @@ export default function Galeria() {
           </div>
         </div>
       )}
+
+      {/* Modal zoom imagen */}
+      {obraSeleccionada && (
+        <div onClick={() => setObraSeleccionada(null)} style={{
+          position:'fixed', inset:0, zIndex:300,
+          background:'#000000ee', backdropFilter:'blur(12px)',
+          display:'flex', alignItems:'center', justifyContent:'center',
+          padding:20, cursor:'zoom-out'
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            position:'relative', maxWidth:900, width:'100%',
+            background:'#0a1628', borderRadius:20, border:'1px solid #0d2040',
+            overflow:'hidden', cursor:'default'
+          }}>
+            <img src={obraSeleccionada.imagen_url} style={{
+              width:'100%', maxHeight:'80vh', objectFit:'contain', display:'block'
+            }}/>
+            <div style={{ padding:'16px 20px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+              <div>
+                <p style={{ color:'#e8f4ff', fontWeight:700, fontSize:16 }}>{obraSeleccionada.titulo}</p>
+                <p style={{ color:'#3a6688', fontSize:13, marginTop:4 }}>@{obraSeleccionada.Usuarios?.username}</p>
+              </div>
+              <div style={{ display:'flex', alignItems:'center', gap:16 }}>
+                <button onClick={() => darLike(obraSeleccionada)} style={{
+                  background:'none', border:'none',
+                  color: likesData[obraSeleccionada.id] ? '#ff6b9d' : '#3a6688',
+                  fontSize:18, cursor:'pointer', display:'flex', alignItems:'center', gap:6,
+                  transform: likesData[obraSeleccionada.id] ? 'scale(1.1)' : 'scale(1)',
+                  transition:'all 0.2s'
+                }}>
+                  {likesData[obraSeleccionada.id] ? '♥' : '♡'}
+                  <span style={{ fontSize:14 }}>{obraSeleccionada.likes_count}</span>
+                </button>
+                <button onClick={() => setObraSeleccionada(null)} style={{
+                  background:'none', border:'1px solid #0d2040', color:'#3a6688',
+                  width:32, height:32, borderRadius:'50%', fontSize:18, cursor:'pointer'
+                }}>×</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
