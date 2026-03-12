@@ -10,6 +10,7 @@ interface Usuario {
   username: string
   bio: string | null
   avatar_url: string | null
+  banner_url: string | null  // ← NUEVO
   tipo: string | null
   banner_color_idx: number | null
   social_twitter: string | null
@@ -181,6 +182,24 @@ const CSS = `
     transition: all .15s;
   }
   .delete-btn:hover { background:#ff6b9d33; }
+
+  .banner-upload-btn {
+    background: #00000066;
+    backdrop-filter: blur(8px);
+    border: 1px solid #ffffff22;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: sans-serif;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .banner-upload-btn:hover { background:#00000088; border-color:#ffffff44; }
 `
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -195,6 +214,7 @@ export default function Perfil() {
   const [editando, setEditando]         = useState(false)
   const [guardando, setGuardando]       = useState(false)
   const [subiendoAvatar, setSubiendoAvatar] = useState(false)
+  const [subiendoBanner, setSubiendoBanner] = useState(false)  // ← NUEVO
   const [obraZoom, setObraZoom]         = useState<Obra | null>(null)
   const [tab, setTab]                   = useState<Tab>('obras')
   const [toasts, setToasts]             = useState<ToastItem[]>([])
@@ -205,8 +225,10 @@ export default function Perfil() {
   const [socialTwitter, setSocialTwitter]   = useState("")
   const [socialInstagram, setSocialInstagram] = useState("")
   const [bannerIdx, setBannerIdx]       = useState(0)
+  const [bannerUrl, setBannerUrl]       = useState<string | null>(null)  // ← NUEVO
 
   const avatarRef = useRef<HTMLInputElement>(null)
+  const bannerRef = useRef<HTMLInputElement>(null)  // ← NUEVO
 
   // ── Toast helper ──────────────────────────────────────────────────────────
 
@@ -234,6 +256,7 @@ export default function Perfil() {
         setSocialTwitter(p.social_twitter || '')
         setSocialInstagram(p.social_instagram || '')
         setBannerIdx(p.banner_color_idx ?? 0)
+        setBannerUrl(p.banner_url || null)  // ← NUEVO
       }
 
       const { data: obrasData } = await supabase
@@ -268,12 +291,19 @@ export default function Perfil() {
       social_twitter: socialTwitter,
       social_instagram: socialInstagram,
       banner_color_idx: bannerIdx,
+      banner_url: bannerUrl,  // ← NUEVO
     }).eq('id', user.id)
 
     if (error) {
       toast('Error al guardar los cambios', 'err')
     } else {
-      setPerfil(prev => prev ? { ...prev, bio, username, social_twitter: socialTwitter, social_instagram: socialInstagram, banner_color_idx: bannerIdx } : prev)
+      setPerfil(prev => prev ? { 
+        ...prev, bio, username, 
+        social_twitter: socialTwitter, 
+        social_instagram: socialInstagram, 
+        banner_color_idx: bannerIdx,
+        banner_url: bannerUrl  // ← NUEVO
+      } : prev)
       toast('✓ Perfil guardado')
       setEditando(false)
     }
@@ -287,6 +317,7 @@ export default function Perfil() {
     setSocialTwitter(perfil?.social_twitter || '')
     setSocialInstagram(perfil?.social_instagram || '')
     setBannerIdx(perfil?.banner_color_idx ?? 0)
+    setBannerUrl(perfil?.banner_url || null)  // ← NUEVO
     setEditando(false)
   }
 
@@ -310,6 +341,34 @@ export default function Perfil() {
     setPerfil(prev => prev ? { ...prev, avatar_url: publicUrl } : prev)
     toast('✓ Avatar actualizado')
     setSubiendoAvatar(false)
+  }
+
+  // ── NUEVA FUNCIÓN: Subir banner ──────────────────────────────────────────
+  const subirBanner = async (file: File) => {
+    if (!user) return
+    setSubiendoBanner(true)
+    const ext = file.name.split('.').pop()
+    const path = `banners/${user.id}.${ext}`
+
+    const { error: upErr } = await supabase.storage
+      .from('avatars').upload(path, file, { upsert: true })
+
+    if (upErr) {
+      toast('Error al subir el banner', 'err')
+      setSubiendoBanner(false)
+      return
+    }
+
+    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+    setBannerUrl(publicUrl)
+    toast('✓ Banner actualizado')
+    setSubiendoBanner(false)
+  }
+
+  // ── NUEVA FUNCIÓN: Eliminar banner ───────────────────────────────────────
+  const eliminarBanner = () => {
+    setBannerUrl(null)
+    toast('Banner eliminado (recuerda guardar cambios)')
   }
 
   const eliminarObra = async (obra: Obra, e: React.MouseEvent) => {
@@ -367,19 +426,50 @@ export default function Perfil() {
 
           {/* Banner */}
           <div style={{
-            height: 120, position: 'relative', overflow: 'hidden',
-            background: banner.bg,
+            height: 120, 
+            position: 'relative', 
+            overflow: 'hidden',
+            background: bannerUrl 
+              ? `url(${bannerUrl}) center/cover`  // ← Si hay imagen, usar imagen
+              : banner.bg,  // ← Si no, usar gradiente
             borderRadius: '20px 20px 0 0',
           }}>
-            {/* Decorative orbs */}
-            <div style={{ position:'absolute', width:380, height:380, borderRadius:'50%', background:'radial-gradient(circle,#00cfff09,transparent)', top:-140, left:'15%', pointerEvents:'none' }}/>
-            <div style={{ position:'absolute', width:220, height:220, borderRadius:'50%', background:'radial-gradient(circle,#ff6b9d07,transparent)', top:-60, right:'10%', pointerEvents:'none' }}/>
+            {/* Decorative orbs (solo si NO hay imagen) */}
+            {!bannerUrl && (
+              <>
+                <div style={{ position:'absolute', width:380, height:380, borderRadius:'50%', background:'radial-gradient(circle,#00cfff09,transparent)', top:-140, left:'15%', pointerEvents:'none' }}/>
+                <div style={{ position:'absolute', width:220, height:220, borderRadius:'50%', background:'radial-gradient(circle,#ff6b9d07,transparent)', top:-60, right:'10%', pointerEvents:'none' }}/>
+              </>
+            )}
 
-            {/* Banner color picker (edit mode) */}
+            {/* Banner controls (edit mode) */}
             {editando && (
-              <div style={{ position:'absolute', bottom:10, right:14, display:'flex', gap:7, alignItems:'center' }}>
-                <span style={{ color:'#ffffff33', fontSize:10, fontWeight:700, letterSpacing:.5 }}>BANNER</span>
-                {BANNER_PRESETS.map((preset, i) => (
+              <div style={{ position:'absolute', bottom:10, right:14, display:'flex', gap:7, alignItems:'center', flexWrap:'wrap' }}>
+                {/* Botón para subir imagen */}
+                <button 
+                  className="banner-upload-btn" 
+                  onClick={() => bannerRef.current?.click()}
+                  disabled={subiendoBanner}
+                >
+                  {subiendoBanner ? '...' : '📷 Subir foto'}
+                </button>
+                
+                {/* Botón para eliminar imagen (solo si hay imagen) */}
+                {bannerUrl && (
+                  <button 
+                    className="banner-upload-btn" 
+                    onClick={eliminarBanner}
+                    style={{ background:'#ff6b9d33', borderColor:'#ff6b9d44' }}
+                  >
+                    🗑️ Quitar foto
+                  </button>
+                )}
+
+                {/* Separador visual */}
+                {!bannerUrl && <span style={{ color:'#ffffff33', fontSize:10, fontWeight:700, letterSpacing:.5 }}>COLORES</span>}
+                
+                {/* Color picker (solo si NO hay imagen) */}
+                {!bannerUrl && BANNER_PRESETS.map((preset, i) => (
                   <button key={i} onClick={() => setBannerIdx(i)} style={{
                     width: bannerIdx === i ? 22 : 18,
                     height: bannerIdx === i ? 22 : 18,
@@ -392,6 +482,14 @@ export default function Perfil() {
                 ))}
               </div>
             )}
+
+            {/* Input file para banner */}
+            <input 
+              ref={bannerRef} 
+              type="file" 
+              accept="image/*"
+              onChange={e => e.target.files?.[0] && subirBanner(e.target.files[0])} 
+            />
           </div>
 
           {/* Profile body */}
