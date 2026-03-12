@@ -10,7 +10,7 @@ interface Usuario {
   username: string
   bio: string | null
   avatar_url: string | null
-  banner_url: string | null  // ← NUEVO
+  banner_url: string | null
   tipo: string | null
   banner_color_idx: number | null
   social_twitter: string | null
@@ -214,7 +214,7 @@ export default function Perfil() {
   const [editando, setEditando]         = useState(false)
   const [guardando, setGuardando]       = useState(false)
   const [subiendoAvatar, setSubiendoAvatar] = useState(false)
-  const [subiendoBanner, setSubiendoBanner] = useState(false)  // ← NUEVO
+  const [subiendoBanner, setSubiendoBanner] = useState(false)
   const [obraZoom, setObraZoom]         = useState<Obra | null>(null)
   const [tab, setTab]                   = useState<Tab>('obras')
   const [toasts, setToasts]             = useState<ToastItem[]>([])
@@ -225,10 +225,10 @@ export default function Perfil() {
   const [socialTwitter, setSocialTwitter]   = useState("")
   const [socialInstagram, setSocialInstagram] = useState("")
   const [bannerIdx, setBannerIdx]       = useState(0)
-  const [bannerUrl, setBannerUrl]       = useState<string | null>(null)  // ← NUEVO
+  const [bannerUrl, setBannerUrl]       = useState<string | null>(null)
 
   const avatarRef = useRef<HTMLInputElement>(null)
-  const bannerRef = useRef<HTMLInputElement>(null)  // ← NUEVO
+  const bannerRef = useRef<HTMLInputElement>(null)
 
   // ── Toast helper ──────────────────────────────────────────────────────────
 
@@ -256,7 +256,7 @@ export default function Perfil() {
         setSocialTwitter(p.social_twitter || '')
         setSocialInstagram(p.social_instagram || '')
         setBannerIdx(p.banner_color_idx ?? 0)
-        setBannerUrl(p.banner_url || null)  // ← NUEVO
+        setBannerUrl(p.banner_url || null)
       }
 
       const { data: obrasData } = await supabase
@@ -291,7 +291,7 @@ export default function Perfil() {
       social_twitter: socialTwitter,
       social_instagram: socialInstagram,
       banner_color_idx: bannerIdx,
-      banner_url: bannerUrl,  // ← NUEVO
+      banner_url: bannerUrl,
     }).eq('id', user.id)
 
     if (error) {
@@ -302,7 +302,7 @@ export default function Perfil() {
         social_twitter: socialTwitter, 
         social_instagram: socialInstagram, 
         banner_color_idx: bannerIdx,
-        banner_url: bannerUrl  // ← NUEVO
+        banner_url: bannerUrl
       } : prev)
       toast('✓ Perfil guardado')
       setEditando(false)
@@ -311,13 +311,12 @@ export default function Perfil() {
   }
 
   const cancelarEdicion = () => {
-    // Reset fields to saved values
     setBio(perfil?.bio || '')
     setUsername(perfil?.username || '')
     setSocialTwitter(perfil?.social_twitter || '')
     setSocialInstagram(perfil?.social_instagram || '')
     setBannerIdx(perfil?.banner_color_idx ?? 0)
-    setBannerUrl(perfil?.banner_url || null)  // ← NUEVO
+    setBannerUrl(perfil?.banner_url || null)
     setEditando(false)
   }
 
@@ -325,10 +324,11 @@ export default function Perfil() {
     if (!user) return
     setSubiendoAvatar(true)
     const ext = file.name.split('.').pop()
-    const path = `avatars/${user.id}.${ext}`
+    const path = `${user.id}.${ext}`
 
     const { error: upErr } = await supabase.storage
-      .from('avatars').upload(path, file, { upsert: true })
+      .from('Avatars')
+      .upload(path, file, { upsert: true })
 
     if (upErr) {
       toast('Error al subir el avatar', 'err')
@@ -336,36 +336,42 @@ export default function Perfil() {
       return
     }
 
-    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+    const { data: { publicUrl } } = supabase.storage
+      .from('Avatars')
+      .getPublicUrl(path)
+      
     await supabase.from('Usuarios').update({ avatar_url: publicUrl }).eq('id', user.id)
     setPerfil(prev => prev ? { ...prev, avatar_url: publicUrl } : prev)
     toast('✓ Avatar actualizado')
     setSubiendoAvatar(false)
   }
 
-  // ── NUEVA FUNCIÓN: Subir banner ──────────────────────────────────────────
   const subirBanner = async (file: File) => {
     if (!user) return
     setSubiendoBanner(true)
     const ext = file.name.split('.').pop()
-    const path = `banners/${user.id}.${ext}`
+    const path = `${user.id}.${ext}`
 
     const { error: upErr } = await supabase.storage
-      .from('avatars').upload(path, file, { upsert: true })
+      .from('Banners')
+      .upload(path, file, { upsert: true })
 
     if (upErr) {
-      toast('Error al subir el banner', 'err')
+      console.error('Error detallado:', upErr)
+      toast(`Error al subir el banner: ${upErr.message}`, 'err')
       setSubiendoBanner(false)
       return
     }
 
-    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+    const { data: { publicUrl } } = supabase.storage
+      .from('Banners')
+      .getPublicUrl(path)
+      
     setBannerUrl(publicUrl)
     toast('✓ Banner actualizado')
     setSubiendoBanner(false)
   }
 
-  // ── NUEVA FUNCIÓN: Eliminar banner ───────────────────────────────────────
   const eliminarBanner = () => {
     setBannerUrl(null)
     toast('Banner eliminado (recuerda guardar cambios)')
@@ -430,8 +436,8 @@ export default function Perfil() {
             position: 'relative', 
             overflow: 'hidden',
             background: bannerUrl 
-              ? `url(${bannerUrl}) center/cover`  // ← Si hay imagen, usar imagen
-              : banner.bg,  // ← Si no, usar gradiente
+              ? `url(${bannerUrl}) center/cover`
+              : banner.bg,
             borderRadius: '20px 20px 0 0',
           }}>
             {/* Decorative orbs (solo si NO hay imagen) */}
@@ -445,7 +451,6 @@ export default function Perfil() {
             {/* Banner controls (edit mode) */}
             {editando && (
               <div style={{ position:'absolute', bottom:10, right:14, display:'flex', gap:7, alignItems:'center', flexWrap:'wrap' }}>
-                {/* Botón para subir imagen */}
                 <button 
                   className="banner-upload-btn" 
                   onClick={() => bannerRef.current?.click()}
@@ -454,7 +459,6 @@ export default function Perfil() {
                   {subiendoBanner ? '...' : '📷 Subir foto'}
                 </button>
                 
-                {/* Botón para eliminar imagen (solo si hay imagen) */}
                 {bannerUrl && (
                   <button 
                     className="banner-upload-btn" 
@@ -465,10 +469,8 @@ export default function Perfil() {
                   </button>
                 )}
 
-                {/* Separador visual */}
                 {!bannerUrl && <span style={{ color:'#ffffff33', fontSize:10, fontWeight:700, letterSpacing:.5 }}>COLORES</span>}
                 
-                {/* Color picker (solo si NO hay imagen) */}
                 {!bannerUrl && BANNER_PRESETS.map((preset, i) => (
                   <button key={i} onClick={() => setBannerIdx(i)} style={{
                     width: bannerIdx === i ? 22 : 18,
@@ -483,7 +485,6 @@ export default function Perfil() {
               </div>
             )}
 
-            {/* Input file para banner */}
             <input 
               ref={bannerRef} 
               type="file" 
@@ -509,9 +510,7 @@ export default function Perfil() {
                   src={avatarUrl}
                   style={{ width:82, height:82, borderRadius:'50%', border:'4px solid #0a1628', boxShadow:'0 0 0 2px #00cfff33', objectFit:'cover', display:'block' }}
                 />
-                {/* Online dot */}
                 <div style={{ position:'absolute', bottom:4, right:4, width:13, height:13, borderRadius:'50%', background:'#00cfff', border:'2px solid #0a1628' }}/>
-                {/* Hover overlay (edit mode) */}
                 {editando && (
                   <div style={{
                     position:'absolute', inset:0, borderRadius:'50%',
