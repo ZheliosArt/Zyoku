@@ -493,7 +493,9 @@ placeholder="canal_youtube" style={{ background:'none', border:'none', color:'#c
 )}
 </div>
 )}
+</div>  {/* ← CIERRE del Profile body */}
 
+        
           {/* Stats bar */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', borderTop:'1px solid #0d2040' }}>
             {([
