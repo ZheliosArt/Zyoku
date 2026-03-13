@@ -3,9 +3,12 @@ import Nav from '@/components/Nav'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Zyoku',
-  description: 'Comunidad de arte anime y manga',
-}
+title: 'Zyoku',
+description: 'Comunidad de arte anime y manga',
+icons: {
+icon: '/Zyoku-logo-provisional.jpg', // Esto busca el archivo en la carpeta public o app
+},
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -17,3 +20,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   )
 }
+
