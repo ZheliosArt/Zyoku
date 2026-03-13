@@ -98,31 +98,41 @@ export default function Perfil() {
   // ── Actions ───────────────────────────────────────────────────────────────
 
   const guardarPerfil = async () => {
-    if (!user) return
-    setGuardando(true)
-    const { error } = await supabase.from('Usuarios').update({
-      bio, username,
-      social_twitter: socialTwitter,
-      social_instagram: socialInstagram,
-      banner_color_idx: bannerIdx,
-      banner_url: bannerUrl,
-    }).eq('id', user.id)
+if (!user) return
+setGuardando(true)
+const { error } = await supabase.from('Usuarios').update({
+bio, username,
+social_twitter: socialTwitter,
+social_instagram: socialInstagram,
+social_patreon: socialPatreon,
+social_tiktok: socialTiktok,
+social_youtube: socialYoutube,
+location: locationText,
+pronoun: pronounText,
+banner_color_idx: bannerIdx,
+banner_url: bannerUrl,
+}).eq('id', user.id)
 
-    if (error) {
-      toast('Error al guardar los cambios', 'err')
-    } else {
-      setPerfil(prev => prev ? { 
-        ...prev, bio, username, 
-        social_twitter: socialTwitter, 
-        social_instagram: socialInstagram, 
-        banner_color_idx: bannerIdx,
-        banner_url: bannerUrl
-      } : prev)
-      toast('✓ Perfil guardado')
-      setEditando(false)
-    }
-    setGuardando(false)
-  }
+if (error) {
+toast('Error al guardar los cambios', 'err')
+} else {
+setPerfil(prev => prev ? { 
+...prev, bio, username, 
+social_twitter: socialTwitter, 
+social_instagram: socialInstagram, 
+social_patreon: socialPatreon,
+social_tiktok: socialTiktok,
+social_youtube: socialYoutube,
+location: locationText,
+pronoun: pronounText,
+banner_color_idx: bannerIdx,
+banner_url: bannerUrl
+} : prev)
+toast('✓ Perfil guardado')
+setEditando(false)
+}
+setGuardando(false)
+}
 
   const cancelarEdicion = () => {
     setBio(perfil?.bio || '')
