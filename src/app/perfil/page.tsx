@@ -38,6 +38,11 @@ export default function Perfil() {
   const [username, setUsername]         = useState("")
   const [socialTwitter, setSocialTwitter]   = useState("")
   const [socialInstagram, setSocialInstagram] = useState("")
+  const [socialPatreon, setSocialPatreon] = useState('')
+  const [socialTiktok, setSocialTiktok] = useState('')
+  const [socialYoutube, setSocialYoutube] = useState('')
+  const [locationText, setLocationText] = useState('')
+  const [pronounText, setPronounText] = useState('')
   const [bannerIdx, setBannerIdx]       = useState(0)
   const [bannerUrl, setBannerUrl]       = useState<string | null>(null)
 
