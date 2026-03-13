@@ -134,57 +134,45 @@ export default function Perfil() {
     setEditando(false)
   }
 
-  const subirAvatar = async (file: File) => {
-    if (!user) return
-    setSubiendoAvatar(true)
-    const ext = file.name.split('.').pop()
-    const path = `${user.id}.${ext}`
+const subirAvatar = async (file: File) => {
+if (!user) return
+setSubiendoAvatar(true)
+const ext = file.name.split('.').pop()
+const path = `${user.id}.${ext}`
+const { error: upErr} = await supabase.storage.from('Avatars').upload(path, file, { upsert: true })
+if (upErr) {
+toast('Error al subir el avatar', 'err')
+setSubiendoAvatar(false)
+return
+}
+const { data: { publicUrl } } = supabase.storage.from('Avatars').getPublicUrl(path)
+const timestamp = new Date().getTime()
+const urlConCacheBuster = `${publicUrl}?v=${timestamp}`
+await supabase.from('Usuarios').update({ avatar_url: urlConCacheBuster }).eq('id', user.id)
+setPerfil(prev => prev ? { ...prev, avatar_url: urlConCacheBuster } : prev)
+toast('Avatar actualizado')
+setSubiendoAvatar(false)
+}
 
-    const { error: upErr } = await supabase.storage
-      .from('Avatars')
-      .upload(path, file, { upsert: true })
-
-    if (upErr) {
-      toast('Error al subir el avatar', 'err')
-      setSubiendoAvatar(false)
-      return
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('Avatars')
-      .getPublicUrl(path)
-      
-    await supabase.from('Usuarios').update({ avatar_url: publicUrl }).eq('id', user.id)
-    setPerfil(prev => prev ? { ...prev, avatar_url: publicUrl } : prev)
-    toast('✓ Avatar actualizado')
-    setSubiendoAvatar(false)
-  }
-
-  const subirBanner = async (file: File) => {
-    if (!user) return
-    setSubiendoBanner(true)
-    const ext = file.name.split('.').pop()
-    const path = `${user.id}.${ext}`
-
-    const { error: upErr } = await supabase.storage
-      .from('Banners')
-      .upload(path, file, { upsert: true })
-
-    if (upErr) {
-      console.error('Error detallado:', upErr)
-      toast(`Error al subir el banner: ${upErr.message}`, 'err')
-      setSubiendoBanner(false)
-      return
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('Banners')
-      .getPublicUrl(path)
-      
-    setBannerUrl(publicUrl)
-    toast('✓ Banner actualizado')
-    setSubiendoBanner(false)
-  }
+const subirBanner = async (file: File) => {
+if (!user) return
+setSubiendoBanner(true)
+const ext = file.name.split('.').pop()
+const path = `${user.id}.${ext}`
+const { error: upErr } = await supabase.storage.from('Banners').upload(path, file, {upsert: true})
+if (upErr) {
+console.error('Error detallado:', upErr)
+toast(`Error al subir el banner: ${upErr.message}`, 'err')
+setSubiendoBanner(false)
+return
+}
+const { data: { publicUrl } } = supabase.storage.from('Banners').getPublicUrl(path)
+const timestamp = new Date().getTime()
+const urlConCacheBuster = `${publicUrl}?v=${timestamp}`
+setBannerUrl(urlConCacheBuster)
+toast('Banner actualizado')
+setSubiendoBanner(false)
+}
 
   const eliminarBanner = () => {
     setBannerUrl(null)
