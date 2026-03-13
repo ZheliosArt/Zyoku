@@ -9,6 +9,13 @@ export interface Usuario {
   banner_color_idx: number | null
   social_twitter: string | null
   social_instagram: string | null
+  social_patreon: string | null
+  social_tiktok: string | null
+  social_youtube: string | null
+  location: string | null
+  pronoun: string | null
+
+
 }
 
 // Tipo de obra
