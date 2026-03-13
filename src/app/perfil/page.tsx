@@ -74,9 +74,14 @@ export default function Perfil() {
         setUsername(p.username || '')
         setSocialTwitter(p.social_twitter || '')
         setSocialInstagram(p.social_instagram || '')
+        setSocialPatreon(p.social_patreon || '')
+        setSocialTiktok(p.social_tiktok || '')
+        setSocialYoutube(p.social_youtube || '')
+        setLocationText(p.location || '')
+        setPronounText(p.pronoun || '')
         setBannerIdx(p.banner_color_idx ?? 0)
         setBannerUrl(p.banner_url || null)
-      }
+     }
 
       const { data: obrasData } = await supabase
         .from('obras').select('*').eq('usuario_id', userData.id)
@@ -139,15 +144,20 @@ setEditando(false)
 setGuardando(false)
 }
 
-  const cancelarEdicion = () => {
+ const cancelarEdicion = () => {
     setBio(perfil?.bio || '')
     setUsername(perfil?.username || '')
     setSocialTwitter(perfil?.social_twitter || '')
     setSocialInstagram(perfil?.social_instagram || '')
+    setSocialPatreon(perfil?.social_patreon || '')
+    setSocialTiktok(perfil?.social_tiktok || '')
+    setSocialYoutube(perfil?.social_youtube || '')
+    setLocationText(perfil?.location || '')
+    setPronounText(perfil?.pronoun || '')
     setBannerIdx(perfil?.banner_color_idx ?? 0)
     setBannerUrl(perfil?.banner_url || null)
     setEditando(false)
-  }
+}
 
 const subirAvatar = async (file: File) => {
 if (!user) return
