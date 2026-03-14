@@ -1,3 +1,5 @@
+//Ruta: src/app/perfil/page.tsx
+
 "use client"
 
 import { useEffect, useState, useRef, useCallback } from 'react'
@@ -88,6 +90,7 @@ const { data: { user: userData } } = await supabase.auth.getUser()
 if (!userData) { window.location.href = '/'; return }
 setUser(userData)
 
+
 const { data: p } = await supabase.from('Usuarios').select('*').eq('id', userData.id).single()
 if (p) {
 setPerfil(p); setBio(p.bio || ''); setUsername(p.username || '')
@@ -109,10 +112,18 @@ const { count: seg } = await supabase.from('seguidores').select('*', { count:'ex
 const { count: sig } = await supabase.from('seguidores').select('*', { count:'exact', head:true }).eq('seguidor_id', userData.id)
 setStats({ obras: obrasData?.length || 0, likes: totalLikes, seguidores: seg || 0, siguiendo: sig || 0 })
 
-const { data: cols, count: cGuardados } = await supabase.from('colecciones').select('*, obras_guardadas(count)', { count: 'exact' }).eq('usuario_id', userData.id)
-setColecciones(cols || [])
-setGuardadosCount(cGuardados || 0)
+const { data: cols, count: cGuardados } = await supabase
+.from('colecciones')
+.select('*, obras_guardadas(count), portadas:obras_guardadas(obras(imagen_url))', { count: 'exact' })
+.eq('usuario_id', userData.id)
 
+const coleccionesFormateadas = (cols || []).map((col: any) => ({
+...col,
+portada_url: col.portadas?.[0]?.obras?.imagen_url || null
+}))
+
+setColecciones(coleccionesFormateadas)
+setGuardadosCount(cGuardados || 0)
 setLoading(false)
 }
 cargar()
