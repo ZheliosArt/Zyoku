@@ -11,7 +11,6 @@ export const BANNER_PRESETS = [
 export const TIPO_LABELS: Record<string, string> = {
   fan: 'FAN',
   artista: 'ARTISTA',
-  escritor: 'ESCRITOR',
   cosplayer: 'COSPLAYER',
   musico: 'MÚSICO',
 }
