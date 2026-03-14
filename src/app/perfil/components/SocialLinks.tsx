@@ -1,3 +1,5 @@
+"use client"
+
 import type { Usuario } from '../utils/types'
 
 interface SocialLinksProps {
@@ -42,7 +44,7 @@ export default function SocialLinks({
           <input 
             value={socialTwitter} 
             onChange={e => setSocialTwitter(limpiarUsername(e.target.value, 'twitter'))}
-            placeholder="usuario" 
+            placeholder="Usuario de Twitter" 
             style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} 
           />
         </div>
@@ -54,7 +56,7 @@ export default function SocialLinks({
           <input 
             value={socialInstagram} 
             onChange={e => setSocialInstagram(limpiarUsername(e.target.value, 'instagram'))}
-            placeholder="usuario" 
+            placeholder="Usuario de Instagram" 
             style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} 
           />
         </div>
@@ -69,7 +71,7 @@ export default function SocialLinks({
           <input 
             value={socialPatreon} 
             onChange={e => setSocialPatreon(limpiarUsername(e.target.value, 'patreon'))}
-            placeholder="usuario" 
+            placeholder="Usuario de Patreon" 
             style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} 
           />
         </div>
@@ -81,7 +83,7 @@ export default function SocialLinks({
           <input 
             value={socialTiktok} 
             onChange={e => setSocialTiktok(limpiarUsername(e.target.value, 'tiktok'))}
-            placeholder="usuario" 
+            placeholder="Usuario de TikTok" 
             style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} 
           />
         </div>
@@ -93,7 +95,7 @@ export default function SocialLinks({
           <input 
             value={socialYoutube} 
             onChange={e => setSocialYoutube(limpiarUsername(e.target.value, 'youtube'))}
-            placeholder="canal" 
+            placeholder="Canal de Youtube" 
             style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} 
           />
         </div>

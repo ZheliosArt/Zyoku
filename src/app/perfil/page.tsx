@@ -33,6 +33,18 @@ import ProfileBio from './components/ProfileBio'
 // Importar ProfileInfo
 import ProfileInfo from './components/ProfileInfo'
 
+// Importar WorksTabs
+import WorksTabs from './components/WorksTabs'
+
+// Importar WorksGrid
+import WorksGrid from './components/WorksGrid'
+
+// Importar ZoomModal
+import ZoomModal from './components/ZoomModal'
+
+// Importar ProfileHeader
+import ProfileHeader from './components/ProfileHeader'
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function Perfil() {
@@ -288,134 +300,29 @@ setSubiendoBanner(false)
         {/* ── Profile Card ── */}
         <div className="fade-up card" style={{ marginBottom:20, overflow:'hidden' }}>
 
-          {/* Banner */}
-          <div style={{
-            height: 120, 
-            position: 'relative', 
-            overflow: 'hidden',
-            background: bannerUrl 
-              ? `url(${bannerUrl}) center/cover`
-              : banner.bg,
-            borderRadius: '20px 20px 0 0',
-          }}>
-            {/* Decorative orbs (solo si NO hay imagen) */}
-            {!bannerUrl && (
-              <>
-                <div style={{ position:'absolute', width:380, height:380, borderRadius:'50%', background:'radial-gradient(circle,#00cfff09,transparent)', top:-140, left:'15%', pointerEvents:'none' }}/>
-                <div style={{ position:'absolute', width:220, height:220, borderRadius:'50%', background:'radial-gradient(circle,#ff6b9d07,transparent)', top:-60, right:'10%', pointerEvents:'none' }}/>
-              </>
-            )}
+        <ProfileHeader
+            editando={editando}
+            guardando={guardando}
+            subiendoAvatar={subiendoAvatar}
+            subiendoBanner={subiendoBanner}
+            bannerUrl={bannerUrl}
+            bannerIdx={bannerIdx}
+            avatarUrl={avatarUrl}
+            perfil={perfil}
+            avatarRef={avatarRef}
+            bannerRef={bannerRef}
+            setBannerIdx={setBannerIdx}
+            eliminarBanner={eliminarBanner}
+            subirBanner={subirBanner}
+            subirAvatar={subirAvatar}
+            guardarPerfil={guardarPerfil}
+            cancelarEdicion={cancelarEdicion}
+            setEditando={setEditando}
+            cerrarSesion={cerrarSesion}
+        />
 
-            {/* Banner controls (edit mode) */}
-            {editando && (
-              <div style={{ position:'absolute', bottom:10, right:14, display:'flex', gap:7, alignItems:'center', flexWrap:'wrap' }}>
-                <button 
-                  className="banner-upload-btn" 
-                  onClick={() => bannerRef.current?.click()}
-                  disabled={subiendoBanner}
-                >
-                  {subiendoBanner ? '...' : '📷 Subir foto'}
-                </button>
-                
-                {bannerUrl && (
-                  <button 
-                    className="banner-upload-btn" 
-                    onClick={eliminarBanner}
-                    style={{ background:'#ff6b9d33', borderColor:'#ff6b9d44' }}
-                  >
-                    🗑️ Quitar foto
-                  </button>
-                )}
-
-                {!bannerUrl && <span style={{ color:'#ffffff33', fontSize:10, fontWeight:700, letterSpacing:.5 }}>COLORES</span>}
-                
-                {!bannerUrl && BANNER_PRESETS.map((preset, i) => (
-                  <button key={i} onClick={() => setBannerIdx(i)} style={{
-                    width: bannerIdx === i ? 22 : 18,
-                    height: bannerIdx === i ? 22 : 18,
-                    borderRadius: '50%',
-                    background: preset.bg,
-                    border: bannerIdx === i ? '2px solid #00cfff' : '2px solid #ffffff22',
-                    cursor: 'pointer',
-                    transition: 'all .15s',
-                  }}/>
-                ))}
-              </div>
-            )}
-
-            <input 
-              ref={bannerRef} 
-              type="file" 
-              accept="image/*"
-              onChange={e => e.target.files?.[0] && subirBanner(e.target.files[0])} 
-            />
-          </div>
-
-          {/* Profile body */}
-          <div style={{ padding:'0 28px 28px' }}>
-
-            {/* Avatar + action buttons row */}
-            <div style={{
-              display:'flex', justifyContent:'space-between', alignItems:'flex-end',
-              flexWrap:'wrap', gap:12, marginTop:-40, marginBottom:18,
-            }}>
-              {/* Avatar */}
-              <div
-                style={{ position:'relative', cursor: editando ? 'pointer' : 'default' }}
-                onClick={() => editando && avatarRef.current?.click()}
-              >
-                <img
-                  src={avatarUrl}
-                  style={{ width:82, height:82, borderRadius:'50%', border:'4px solid #0a1628', boxShadow:'0 0 0 2px #00cfff33', objectFit:'cover', display:'block' }}
-                />
-                <div style={{ position:'absolute', bottom:4, right:4, width:13, height:13, borderRadius:'50%', background:'#00cfff', border:'2px solid #0a1628' }}/>
-                {editando && (
-                  <div style={{
-                    position:'absolute', inset:0, borderRadius:'50%',
-                    background: subiendoAvatar ? '#000000bb' : '#000000aa',
-                    display:'flex', alignItems:'center', justifyContent:'center',
-                    opacity: subiendoAvatar ? 1 : 0,
-                    transition: 'opacity .2s',
-                    fontSize:11, fontWeight:700, color:'#00cfff', border:'4px solid #0a1628',
-                  }}
-                    onMouseEnter={e => { if(!subiendoAvatar)(e.currentTarget.style.opacity = '1') }}
-                    onMouseLeave={e => { if(!subiendoAvatar)(e.currentTarget.style.opacity = '0') }}
-                  >
-                    {subiendoAvatar ? '...' : '📷'}
-                  </div>
-                )}
-                <input ref={avatarRef} type="file" accept="image/*"
-                  onChange={e => e.target.files?.[0] && subirAvatar(e.target.files[0])} />
-              </div>
-
-              {/* Action buttons */}
-              <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-                {editando ? (
-                  <>
-                    <button className="btn-primary" onClick={guardarPerfil} disabled={guardando}
-                      style={{ padding:'8px 22px', fontSize:13 }}>
-                      {guardando ? 'Guardando…' : 'Guardar cambios'}
-                    </button>
-                    <button className="btn-ghost" onClick={cancelarEdicion}
-                      style={{ padding:'8px 16px', fontSize:13 }}>
-                      Cancelar
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button className="btn-primary" onClick={() => setEditando(true)}
-                      style={{ padding:'8px 20px', fontSize:13 }}>
-                      ✏️ Editar perfil
-                    </button>
-                    <button className="btn-ghost" onClick={cerrarSesion}
-                      style={{ padding:'8px 16px', fontSize:13, color:'#ff6b9d44', borderColor:'#2a1020' }}>
-                      Salir
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-
+    {/* Profile body */}
+    <div style={{ padding:'0 28px 28px' }}>
            <ProfileInfo
             editando={editando}
             perfil={perfil}
@@ -429,146 +336,59 @@ setSubiendoBanner(false)
             setPronounText={setPronounText}
             />
 
-            <ProfileBio
-                editando={editando}
-                bio={bio}
-                setBio={setBio}
-                />
+           <ProfileBio
+            editando={editando}
+            bio={bio}
+            setBio={setBio}
+            />
 
             <SocialLinks
-        editando={editando}
-        perfil={perfil}
-        socialTwitter={socialTwitter}
-        socialInstagram={socialInstagram}
-        socialPatreon={socialPatreon}
-        socialTiktok={socialTiktok}
-        socialYoutube={socialYoutube}
-        setSocialTwitter={setSocialTwitter}
-        setSocialInstagram={setSocialInstagram}
-        setSocialPatreon={setSocialPatreon}
-        setSocialTiktok={setSocialTiktok}
-        setSocialYoutube={setSocialYoutube}
-        limpiarUsername={limpiarUsername}
-        />
-        </div>
+            editando={editando}
+            perfil={perfil}
+            socialTwitter={socialTwitter}
+            socialInstagram={socialInstagram}
+            socialPatreon={socialPatreon}
+            socialTiktok={socialTiktok}
+            socialYoutube={socialYoutube}
+            setSocialTwitter={setSocialTwitter}
+            setSocialInstagram={setSocialInstagram}
+            setSocialPatreon={setSocialPatreon}
+            setSocialTiktok={setSocialTiktok}
+            setSocialYoutube={setSocialYoutube}
+            limpiarUsername={limpiarUsername}
+            />
+            </div>
 
              <StatsBar stats={stats} />
-        </div>
+        </div> {/* ← Cierre del card */}
 
-        
 
-        {/* ── Tabs ── */}
-        <div style={{
-          display:'flex', gap:4, marginBottom:18,
-          background:'#0a1628', border:'1px solid #0d2040', borderRadius:14,
-          padding:4, width:'fit-content',
-        }}>
-          {(['obras', 'likes'] as const).map(t => (
-            <button key={t} className="tab-btn" onClick={() => setTab(t)} style={{
-              background: tab === t ? '#0d2040' : 'transparent',
-              color:      tab === t ? '#00cfff' : '#3a6688',
-            }}>
-              {t === 'obras'
-                ? `🎨 Mis obras (${stats.obras})`
-                : `♥ Me gustaron (${obrasLikeadas.length})`}
-            </button>
-          ))}
-        </div>
+        <WorksTabs
+            tab={tab}
+            setTab={setTab}
+            obrasCount={stats.obras}
+            likesCount={obrasLikeadas.length}
+        />
 
-        {/* ── Works grid ── */}
+       {/* ── Works grid ── */}
         {obrasActivas.length === 0 ? (
-          <EmptyState tab={tab} />
+            <EmptyState tab={tab} />
         ) : (
-          <div style={{ columns:'3 220px', gap:14 }}>
-            {obrasActivas.map((obra: Obra) => (
-              <div
-                key={obra.id}
-                className="obra-card"
-                style={{
-                  breakInside:'avoid', marginBottom:14,
-                  borderRadius:12, overflow:'hidden',
-                  border:'1px solid #0d2040', background:'#0a1628',
-                  position:'relative',
-                }}
-                onClick={() => setObraZoom(obra)}
-              >
-                <img src={obra.imagen_url} style={{ width:'100%', display:'block' }} alt={obra.titulo} />
-                <div className="obra-overlay" style={{
-                  position:'absolute', inset:0,
-                  background:'linear-gradient(to top,#050d1af0 0%,#050d1a44 50%,transparent 100%)',
-                  opacity:0, transition:'opacity .25s',
-                  display:'flex', flexDirection:'column', justifyContent:'flex-end', padding:12,
-                }}>
-                  <p style={{ color:'#e8f4ff', fontWeight:700, fontSize:13, marginBottom:4 }}>{obra.titulo}</p>
-                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                    <span style={{ color:'#ff6b9d', fontSize:12 }}>♥ {obra.likes_count || 0}</span>
-                    {tab === 'obras' && (
-                      <button className="delete-btn" onClick={e => eliminarObra(obra, e)}>
-                        Eliminar
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* ── Zoom modal ── */}
-      {obraZoom && (
-        <div
-          onClick={() => setObraZoom(null)}
-          style={{
-            position:'fixed', inset:0, zIndex:300,
-            background:'#000000ee', backdropFilter:'blur(16px)',
-            display:'flex', alignItems:'center', justifyContent:'center',
-            padding:20, cursor:'zoom-out',
-          }}
-        >
-          <div
-            onClick={e => e.stopPropagation()}
-            className="card scale-in"
-            style={{ maxWidth:900, width:'100%', overflow:'hidden', cursor:'default' }}
-          >
-            <img
-              src={obraZoom.imagen_url}
-              style={{ width:'100%', maxHeight:'70vh', objectFit:'contain', display:'block' }}
-              alt={obraZoom.titulo}
+            <WorksGrid
+            obras={obrasActivas}
+            tab={tab}
+            onObraClick={setObraZoom}
+            onDeleteObra={eliminarObra}
             />
-            <div style={{ padding:'16px 22px', display:'flex', justifyContent:'space-between', alignItems:'center', gap:12, flexWrap:'wrap' }}>
-              <div>
-                <p style={{ color:'#e8f4ff', fontWeight:800, fontSize:16 }}>{obraZoom.titulo}</p>
-                {obraZoom.descripcion && (
-                  <p style={{ color:'#3a6688', fontSize:13, marginTop:5, lineHeight:1.6 }}>{obraZoom.descripcion}</p>
-                )}
-                <p style={{ color:'#1a4060', fontSize:11, marginTop:6 }}>
-                  {new Date(obraZoom.created_at).toLocaleDateString('es-MX', { year:'numeric', month:'long', day:'numeric' })}
-                </p>
-              </div>
-              <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-                <span style={{ color:'#ff6b9d', fontSize:16, fontWeight:700 }}>♥ {obraZoom.likes_count || 0}</span>
-                {obraZoom.tipo && (
-                  <span className="tipo-pill">{obraZoom.tipo.toUpperCase()}</span>
-                )}
-                {tab === 'obras' && (
-                  <button className="delete-btn" onClick={e => eliminarObra(obraZoom, e)}>
-                    Eliminar
-                  </button>
-                )}
-                <button
-                  onClick={() => setObraZoom(null)}
-                  className="btn-ghost"
-                  style={{ width:34, height:34, borderRadius:'50%', fontSize:18, padding:0,
-                    display:'flex', alignItems:'center', justifyContent:'center' }}
-                >
-                  ×
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+        )}
+
+     <ZoomModal
+     obra={obraZoom}
+     tab={tab}
+     onClose={() => setObraZoom(null)}
+     onDelete={eliminarObra}
+   />
+   </div>
     </div>
   )
 }
