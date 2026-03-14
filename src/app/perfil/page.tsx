@@ -24,6 +24,15 @@ import EmptyState from './components/EmptyState'
 // Importar StatsBar
 import StatsBar from './components/StatsBar'
 
+// Importar SocialLinks
+import SocialLinks from './components/SocialLinks'
+
+// Importar ProfileBio
+import ProfileBio from './components/ProfileBio'
+
+// Importar ProfileInfo
+import ProfileInfo from './components/ProfileInfo'
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function Perfil() {
@@ -407,147 +416,46 @@ setSubiendoBanner(false)
               </div>
             </div>
 
-            {/* Name + email + tipo + location + pronouns */}
-            <div style={{ marginBottom:12 }}>
-              {editando ? (
-                <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:8 }}>
-                  <input value={username} onChange={e => setUsername(e.target.value)} className="field"
-                    style={{ fontSize:18, fontWeight:800, maxWidth:280 }} placeholder="Nombre de usuario" />
-                  <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-                    <input value={locationText} onChange={e => setLocationText(e.target.value)} className="field"
-                      style={{ fontSize:13, maxWidth:135 }} placeholder="📍 Ubicación" />
-                    <input value={pronounText} onChange={e => setPronounText(e.target.value)} className="field"
-                      style={{ fontSize:13, maxWidth:135 }} placeholder="🗣️ Pronombres" />
-                  </div>
-                </div>
-              ) : (
-                <h1 style={{ fontSize:22, fontWeight:800, color:'#e8f4ff', marginBottom:6 }}>
-                  {nombreMostrado} {perfil?.pronoun && <span style={{ fontSize:14, color:'#8ab4cc', fontWeight:400 }}>({perfil.pronoun})</span>}
-                </h1>
-              )}
-              <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
-                <span style={{ color:'#1a4060', fontSize:12 }}>{user.email}</span>
-                <span className="tipo-pill">{TIPO_LABELS[perfil?.tipo || 'fan'] || (perfil?.tipo?.toUpperCase()) || 'FAN'}</span>
-                {!editando && perfil?.location && (
-                  <span style={{ color:'#8ab4cc', fontSize:12 }}>📍 {perfil.location}</span>
-                )}
-              </div>
-            </div>
+           <ProfileInfo
+            editando={editando}
+            perfil={perfil}
+            userEmail={user.email}
+            nombreMostrado={nombreMostrado}
+            username={username}
+            locationText={locationText}
+            pronounText={pronounText}
+            setUsername={setUsername}
+            setLocationText={setLocationText}
+            setPronounText={setPronounText}
+            />
 
-            {/* Bio */}
-            <div style={{ marginBottom:14 }}>
-              {editando
-                ? <textarea value={bio} onChange={e => setBio(e.target.value)} className="field"
-                    placeholder="Cuéntanos sobre ti…" rows={3} style={{ resize:'none' }} />
-                : <p style={{
-                    color: bio ? '#8ab4cc' : '#1a4060', fontSize:14, lineHeight:1.75,
-                    fontStyle: bio ? 'normal' : 'italic',
-                  }}>
-                    {bio || 'Sin bio aún — haz clic en Editar perfil para agregar una.'}
-                  </p>
-              }
-            </div>
+            <ProfileBio
+                editando={editando}
+                bio={bio}
+                setBio={setBio}
+                />
 
-            {/* Social links */}
-            {editando ? (
-              <div style={{ display:'flex', gap:10, flexWrap:'wrap', flexDirection:'column' }}>
-                <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
-
-                  <div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
-                    background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
-                    <span style={{ color:'#1a4060', fontSize:13, fontWeight:700 }}>𝕏</span>
-                    <input value={socialTwitter} 
-                        onChange={e => setSocialTwitter(limpiarUsername(e.target.value, 'twitter'))}
-                        placeholder="usuario" 
-                        style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} 
-                    />
-                    </div>
-
-
-                  <div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
-                    background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
-                    <span style={{ color:'#1a4060', fontSize:13 }}>📸</span>
-                    <input 
-                    value={socialInstagram} 
-                    onChange={e => setSocialInstagram(limpiarUsername(e.target.value, 'instagram'))}
-                    placeholder="usuario" 
-                    style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} 
-                    />
-                </div>
-                </div>
-
-                <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
-                    background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
-                    <span style={{ color:'#1a4060', fontSize:13 }}>🟠</span>
-                    <input 
-                        value={socialPatreon} 
-                        onChange={e => setSocialPatreon(limpiarUsername(e.target.value, 'patreon'))}
-                        placeholder="usuario" 
-                        style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} 
-                        />
-                        </div>
-
-
-                  <div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
-                    background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
-                    <span style={{ color:'#1a4060', fontSize:13 }}>🎵</span>
-                    <input 
-                        value={socialTiktok} 
-                        onChange={e => setSocialTiktok(limpiarUsername(e.target.value, 'tiktok'))}
-                        placeholder="usuario" 
-                        style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} 
-                        />
-                        </div>
-
-                  <div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
-                    background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
-                    <span style={{ color:'#1a4060', fontSize:13 }}>▶️</span>
-                    <input 
-                        value={socialYoutube} 
-                        onChange={e => setSocialYoutube(limpiarUsername(e.target.value, 'youtube'))}
-                        placeholder="canal" 
-                        style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} 
-                        />                        
-                        </div>
-                    </div>
-              </div>
-            ) : (
-              <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-                {perfil?.social_twitter && (
-                  <a className="social-chip" href={`https://twitter.com/${perfil.social_twitter}`} target="_blank" rel="noopener noreferrer">
-                    𝕏 @{perfil.social_twitter}
-                  </a>
-                )}
-                {perfil?.social_instagram && (
-                  <a className="social-chip" href={`https://instagram.com/${perfil.social_instagram}`} target="_blank" rel="noopener noreferrer">
-                    📸 @{perfil.social_instagram}
-                  </a>
-                )}
-                {perfil?.social_patreon && (
-                  <a className="social-chip" href={`https://patreon.com/${perfil.social_patreon}`} target="_blank" rel="noopener noreferrer">
-                    🟠 @{perfil.social_patreon}
-                  </a>
-                )}
-                {perfil?.social_tiktok && (
-                  <a className="social-chip" href={`https://tiktok.com/@${perfil.social_tiktok}`} target="_blank" rel="noopener noreferrer">
-                    🎵 @{perfil.social_tiktok}
-                  </a>
-                )}
-                {perfil?.social_youtube && (
-                  <a className="social-chip" href={`https://youtube.com/@${perfil.social_youtube}`} target="_blank" rel="noopener noreferrer">
-                    ▶️ @{perfil.social_youtube}
-                  </a>
-                )}
-              </div>
-            )}
-          </div>
+            <SocialLinks
+        editando={editando}
+        perfil={perfil}
+        socialTwitter={socialTwitter}
+        socialInstagram={socialInstagram}
+        socialPatreon={socialPatreon}
+        socialTiktok={socialTiktok}
+        socialYoutube={socialYoutube}
+        setSocialTwitter={setSocialTwitter}
+        setSocialInstagram={setSocialInstagram}
+        setSocialPatreon={setSocialPatreon}
+        setSocialTiktok={setSocialTiktok}
+        setSocialYoutube={setSocialYoutube}
+        limpiarUsername={limpiarUsername}
+        />
+        </div>
 
              <StatsBar stats={stats} />
         </div>
 
         
-
 
         {/* ── Tabs ── */}
         <div style={{
