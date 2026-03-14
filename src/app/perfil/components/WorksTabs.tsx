@@ -19,6 +19,9 @@ export default function WorksTabs({
   likesCount, 
   guardadosCount 
 }: WorksTabsProps) {
+  // Array local (as const) para que el tipo sea exacto y no dependa de import
+  const TAB_OPTIONS = ['obras', 'likes', 'guardados'] as const
+
   return (
     <div style={{
       display: 'flex', 
@@ -30,7 +33,7 @@ export default function WorksTabs({
       padding: 4, 
       width: 'fit-content',
     }}>
-      {(['obras', 'likes', 'guardados'] as const).map(t => (
+      {TAB_OPTIONS.map(t => (
         <button 
           key={t} 
           className={`tab-btn ${tab === t ? 'active' : ''}`} 
