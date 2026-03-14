@@ -12,10 +12,12 @@ username: string
 locationText: string
 pronounText: string
 commissionsOpen: boolean
+tipoText: string // <--- NUEVA PROP
 setUsername: (value: string) => void
 setLocationText: (value: string) => void
 setPronounText: (value: string) => void
 setCommissionsOpen: (value: boolean) => void
+setTipoText: (value: string) => void // <--- NUEVA PROP
 }
 
 export default function ProfileInfo({
@@ -27,10 +29,12 @@ username,
 locationText,
 pronounText,
 commissionsOpen,
+tipoText,
 setUsername,
 setLocationText,
 setPronounText,
-setCommissionsOpen
+setCommissionsOpen,
+setTipoText
 }: ProfileInfoProps) {
 return (
 <div style={{ marginBottom:12 }}>
@@ -58,8 +62,20 @@ className="field"
 style={{ fontSize:13, maxWidth:135 }} 
 placeholder="🗣️ Pronombres" 
 />
+{/* NUEVO DESPLEGABLE DE TIPO */}
+<select
+value={tipoText}
+onChange={e => setTipoText(e.target.value)}
+className="field"
+style={{ fontSize:13, maxWidth:135, cursor:'pointer' }}
+>
+{Object.entries(TIPO_LABELS).map(([key, label]) => (
+<option key={key} value={key}>
+{label}
+</option>
+))}
+</select>
 </div>
-{/* NUEVO CONTROL DE COMISIONES */}
 <label style={{ display:'flex', alignItems:'center', gap:8, cursor:'pointer', fontSize:13, color:'#8ab4cc', marginTop:4 }}>
 <input 
 type="checkbox" 
@@ -76,7 +92,6 @@ Abrir comisiones (mostrar correo públicamente)
 </h1>
 )}
 <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
-{/* CONDICIÓN PARA MOSTRAR CORREO Y BADGE */}
 {commissionsOpen && (
 <>
 <span style={{ color:'#1a4060', fontSize:12 }}>{userEmail}</span>

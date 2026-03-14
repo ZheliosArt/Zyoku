@@ -35,6 +35,7 @@ const [colecciones, setColecciones] = useState<any[]>([])
 const [guardadosCount, setGuardadosCount] = useState(0)
 const [stats, setStats] = useState<Stats>({ obras:0, likes:0, seguidores:0, siguiendo:0 })
 const [commissionsOpen, setCommissionsOpen] = useState(false)
+const [tipoText, setTipoText] = useState('fan')
 
 const [loading, setLoading] = useState(true)
 const [editando, setEditando] = useState(false)
@@ -101,8 +102,8 @@ setSocialYoutube(p.social_youtube || ''); setLocationText(p.location || '')
 setPronounText(p.pronoun || ''); setBannerIdx(p.banner_color_idx ?? 0)
 setBannerUrl(p.banner_url || null)
 setCommissionsOpen(p.commissions_open || false) // <--- NUEVA LÍNEA
-
-}
+setTipoText(p.tipo || 'fan') // <--- NUEVA LÍNEA
+} 
 
 const { data: obrasData } = await supabase.from('obras').select('*').eq('usuario_id', userData.id).order('created_at', { ascending: false })
 setObras(obrasData || [])
@@ -141,7 +142,9 @@ const { error } = await supabase.from('Usuarios').update({
 bio, username, social_twitter: socialTwitter, social_instagram: socialInstagram,
 social_patreon: socialPatreon, social_tiktok: socialTiktok, social_youtube: socialYoutube,
 location: locationText, pronoun: pronounText, banner_color_idx: bannerIdx, banner_url: bannerUrl,
-commissions_open: commissionsOpen // <--- NUEVA LÍNEA
+commissions_open: commissionsOpen, // <--- NUEVA LÍNEA
+tipo: tipoText // <--- NUEVA LÍNEA
+
 }).eq('id', user.id)
 
 if (error) toast('Error al guardar cambios', 'err')
@@ -330,6 +333,8 @@ return (
 <ProfileHeader editando={editando} guardando={guardando} subiendoAvatar={subiendoAvatar} subiendoBanner={subiendoBanner} bannerUrl={bannerUrl} bannerIdx={bannerIdx} avatarUrl={perfil?.avatar_url || user.user_metadata?.avatar_url} perfil={perfil} avatarRef={avatarRef} bannerRef={bannerRef} setBannerIdx={setBannerIdx} eliminarBanner={() => setBannerUrl(null)} subirBanner={subirBanner} subirAvatar={subirAvatar} guardarPerfil={guardarPerfil} cancelarEdicion={() => setEditando(false)} setEditando={setEditando} cerrarSesion={cerrarSesion} />
 
 <div style={{ padding: '0 28px 28px' }}>
+
+
 <ProfileInfo 
 editando={editando} 
 perfil={perfil} 
@@ -343,7 +348,11 @@ setUsername={setUsername}
 setLocationText={setLocationText} 
 setPronounText={setPronounText} 
 setCommissionsOpen={setCommissionsOpen} // <--- NUEVA LÍNEA
-/><ProfileBio editando={editando} bio={bio} setBio={setBio} />
+tipoText={tipoText}
+setTipoText={setTipoText}
+/>
+
+<ProfileBio editando={editando} bio={bio} setBio={setBio} />
 <SocialLinks editando={editando} perfil={perfil} socialTwitter={socialTwitter} socialInstagram={socialInstagram} socialPatreon={socialPatreon} socialTiktok={socialTiktok} socialYoutube={socialYoutube} setSocialTwitter={setSocialTwitter} setSocialInstagram={setSocialInstagram} setSocialPatreon={setSocialPatreon} setSocialTiktok={setSocialTiktok} setSocialYoutube={setSocialYoutube} limpiarUsername={limpiarUsername} />
 </div>
 
