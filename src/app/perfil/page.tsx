@@ -72,23 +72,25 @@ export default function Perfil() {
     
     let cleaned = input.trim()
     
-    // Remover URLs completas
-    cleaned = cleaned
-      .replace(/^https?:\/\/(www\.)?/, '') // Quitar http(s)://www.
-      .replace(/^twitter\.com\//, '')
-      .replace(/^x\.com\//, '')
-      .replace(/^instagram\.com\//, '')
-      .replace(/^youtube\.com\/@?/, '')
-      .replace(/^tiktok\.com\/@?/, '')
-      .replace(/^patreon\.com\//, '')
+    // Si ya es solo un username (sin puntos ni barras), devolver directo
+    if (!/[.\/]/.test(cleaned) && !cleaned.startsWith('@')) {
+      return cleaned
+    }
     
-    // Remover @ del inicio
-    cleaned = cleaned.replace(/^@/, '')
+    // Remover protocolo y www
+    cleaned = cleaned.replace(/^https?:\/\/(www\.)?/, '')
     
-    // Remover cualquier cosa después de / o ?
-    cleaned = cleaned.split('/')[0].split('?')[0]
+    // Extraer username según plataforma
+    const patterns: Record<typeof plataforma, RegExp> = {
+      twitter: /^(?:twitter\.com\/|x\.com\/)?@?([^\/\?&#]+)/,
+      instagram: /^(?:instagram\.com\/)?@?([^\/\?&#]+)/,
+      youtube: /^(?:youtube\.com\/)?@?([^\/\?&#]+)/,
+      tiktok: /^(?:tiktok\.com\/)?@?([^\/\?&#]+)/,
+      patreon: /^(?:patreon\.com\/)?([^\/\?&#]+)/
+    }
     
-    return cleaned
+    const match = cleaned.match(patterns[plataforma])
+    return match ? match[1] : cleaned.split(/[\/\?&#]/)[0].replace(/^@/, '')
   }
 
   // ── Data loading ──────────────────────────────────────────────────────────
