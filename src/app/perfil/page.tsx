@@ -12,9 +12,17 @@ import { BANNER_PRESETS, TIPO_LABELS } from './utils/constants'
 // Importar estilos
 import { CSS } from './utils/styles'
 
+// Importar Skeleton
 import LoadingSkeleton from './components/LoadingSkeleton'
 
+// Importar Contenedor de Toasts
+import ToastContainer from './components/ToastContainer'
 
+// Importar Empty State
+import EmptyState from './components/EmptyState'
+
+// Importar StatsBar
+import StatsBar from './components/StatsBar'
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -236,23 +244,9 @@ setSubiendoBanner(false)
     <div style={{ fontFamily:'sans-serif', background:'#050d1a', minHeight:'100vh', color:'#c8e0f4' }}>
       <style>{CSS}</style>
 
-      {/* ── Toasts ── */}
-      <div style={{ position:'fixed', bottom:24, right:24, zIndex:1000, display:'flex', flexDirection:'column', gap:8 }}>
-        {toasts.map(t => (
-          <div key={t.id} style={{
-            animation: 'toastIn .3s ease both',
-            background: t.tipo === 'ok' ? '#0a1628' : '#180a16',
-            border: `1px solid ${t.tipo === 'ok' ? '#00cfff44' : '#ff6b9d44'}`,
-            color:  t.tipo === 'ok' ? '#00cfff' : '#ff6b9d',
-            padding: '10px 18px', borderRadius: 12, fontSize: 13, fontWeight: 600,
-            boxShadow: '0 6px 24px #00000077',
-          }}>
-            {t.msg}
-          </div>
-        ))}
-      </div>
+     <ToastContainer toasts={toasts} />
 
-      <div style={{ maxWidth:1000, margin:'0 auto', padding:'40px 4%' }}>
+    <div style={{ maxWidth:1000, margin:'0 auto', padding:'40px 4%' }}>
 
         {/* ── Profile Card ── */}
         <div className="fade-up card" style={{ marginBottom:20, overflow:'hidden' }}>
@@ -385,136 +379,121 @@ setSubiendoBanner(false)
               </div>
             </div>
 
-                {/* Name + email + tipo + location + pronouns */}
-<div style={{ marginBottom:12 }}>
-{editando ? (
-<div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:8 }}>
-<input value={username} onChange={e => setUsername(e.target.value)} className="field"
-style={{ fontSize:18, fontWeight:800, maxWidth:280 }} placeholder="Nombre de usuario" />
-<div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-<input value={locationText} onChange={e => setLocationText(e.target.value)} className="field"
-style={{ fontSize:13, maxWidth:135 }} placeholder="📍 Ubicación" />
-<input value={pronounText} onChange={e => setPronounText(e.target.value)} className="field"
-style={{ fontSize:13, maxWidth:135 }} placeholder="🗣️ Pronombres" />
-</div>
-</div>
-) : (
-<h1 style={{ fontSize:22, fontWeight:800, color:'#e8f4ff', marginBottom:6 }}>
-{nombreMostrado} {perfil?.pronoun && <span style={{ fontSize:14, color:'#8ab4cc', fontWeight:400 }}>({perfil.pronoun})</span>}
-</h1>
-)}
-<div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
-<span style={{ color:'#1a4060', fontSize:12 }}>{user.email}</span>
-<span className="tipo-pill">{TIPO_LABELS[perfil?.tipo || 'fan'] || (perfil?.tipo?.toUpperCase()) || 'FAN'}</span>
-{!editando && perfil?.location && (
-<span style={{ color:'#8ab4cc', fontSize:12 }}>📍 {perfil.location}</span>
-)}
-</div>
-</div>
+            {/* Name + email + tipo + location + pronouns */}
+            <div style={{ marginBottom:12 }}>
+              {editando ? (
+                <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:8 }}>
+                  <input value={username} onChange={e => setUsername(e.target.value)} className="field"
+                    style={{ fontSize:18, fontWeight:800, maxWidth:280 }} placeholder="Nombre de usuario" />
+                  <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+                    <input value={locationText} onChange={e => setLocationText(e.target.value)} className="field"
+                      style={{ fontSize:13, maxWidth:135 }} placeholder="📍 Ubicación" />
+                    <input value={pronounText} onChange={e => setPronounText(e.target.value)} className="field"
+                      style={{ fontSize:13, maxWidth:135 }} placeholder="🗣️ Pronombres" />
+                  </div>
+                </div>
+              ) : (
+                <h1 style={{ fontSize:22, fontWeight:800, color:'#e8f4ff', marginBottom:6 }}>
+                  {nombreMostrado} {perfil?.pronoun && <span style={{ fontSize:14, color:'#8ab4cc', fontWeight:400 }}>({perfil.pronoun})</span>}
+                </h1>
+              )}
+              <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
+                <span style={{ color:'#1a4060', fontSize:12 }}>{user.email}</span>
+                <span className="tipo-pill">{TIPO_LABELS[perfil?.tipo || 'fan'] || (perfil?.tipo?.toUpperCase()) || 'FAN'}</span>
+                {!editando && perfil?.location && (
+                  <span style={{ color:'#8ab4cc', fontSize:12 }}>📍 {perfil.location}</span>
+                )}
+              </div>
+            </div>
 
-{/* Bio */}
-<div style={{ marginBottom:14 }}>
-{editando
-? <textarea value={bio} onChange={e => setBio(e.target.value)} className="field"
-placeholder="Cuéntanos sobre ti…" rows={3} style={{ resize:'none' }} />
-: <p style={{
-color: bio ? '#8ab4cc' : '#1a4060', fontSize:14, lineHeight:1.75,
-fontStyle: bio ? 'normal' : 'italic',
-}}>
-{bio || 'Sin bio aún — haz clic en Editar perfil para agregar una.'}
-</p>
-}
-</div>
+            {/* Bio */}
+            <div style={{ marginBottom:14 }}>
+              {editando
+                ? <textarea value={bio} onChange={e => setBio(e.target.value)} className="field"
+                    placeholder="Cuéntanos sobre ti…" rows={3} style={{ resize:'none' }} />
+                : <p style={{
+                    color: bio ? '#8ab4cc' : '#1a4060', fontSize:14, lineHeight:1.75,
+                    fontStyle: bio ? 'normal' : 'italic',
+                  }}>
+                    {bio || 'Sin bio aún — haz clic en Editar perfil para agregar una.'}
+                  </p>
+              }
+            </div>
 
-{/* Social links */}
-{editando ? (
-<div style={{ display:'flex', gap:10, flexWrap:'wrap', flexDirection:'column' }}>
-<div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
-<div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
-background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
-<span style={{ color:'#1a4060', fontSize:13, fontWeight:700 }}>𝕏</span>
-<input value={socialTwitter} onChange={e => setSocialTwitter(e.target.value)}
-placeholder="usuario_twitter" style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} />
-</div>
-<div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
-background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
-<span style={{ color:'#1a4060', fontSize:13 }}>📸</span>
-<input value={socialInstagram} onChange={e => setSocialInstagram(e.target.value)}
-placeholder="usuario_instagram" style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} />
-</div>
-</div>
-<div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
-<div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
-background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
-<span style={{ color:'#1a4060', fontSize:13 }}>🟠</span>
-<input value={socialPatreon} onChange={e => setSocialPatreon(e.target.value)}
-placeholder="usuario_patreon" style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} />
-</div>
-<div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
-background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
-<span style={{ color:'#1a4060', fontSize:13 }}>🎵</span>
-<input value={socialTiktok} onChange={e => setSocialTiktok(e.target.value)}
-placeholder="usuario_tiktok" style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} />
-</div>
-<div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
-background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
-<span style={{ color:'#1a4060', fontSize:13 }}>▶️</span>
-<input value={socialYoutube} onChange={e => setSocialYoutube(e.target.value)}
-placeholder="canal_youtube" style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} />
-</div>
-</div>
-</div>
-) : (
-<div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-{perfil?.social_twitter && (
-<a className="social-chip" href={`https://twitter.com/${perfil.social_twitter}`} target="_blank" rel="noopener noreferrer">
-𝕏 @{perfil.social_twitter}
-</a>
-)}
-{perfil?.social_instagram && (
-<a className="social-chip" href={`https://instagram.com/${perfil.social_instagram}`} target="_blank" rel="noopener noreferrer">
-📸 @{perfil.social_instagram}
-</a>
-)}
-{perfil?.social_patreon && (
-<a className="social-chip" href={`https://patreon.com/${perfil.social_patreon}`} target="_blank" rel="noopener noreferrer">
-🟠 Patreon
-</a>
-)}
-{perfil?.social_tiktok && (
-<a className="social-chip" href={`https://tiktok.com/@${perfil.social_tiktok}`} target="_blank" rel="noopener noreferrer">
-🎵 TikTok
-</a>
-)}
-{perfil?.social_youtube && (
-<a className="social-chip" href={`https://youtube.com/@${perfil.social_youtube}`} target="_blank" rel="noopener noreferrer">
-▶️ YouTube
-</a>
-)}
-</div>
-)}
-</div>  {/* ← CIERRE del Profile body */}
+            {/* Social links */}
+            {editando ? (
+              <div style={{ display:'flex', gap:10, flexWrap:'wrap', flexDirection:'column' }}>
+                <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
+                    background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
+                    <span style={{ color:'#1a4060', fontSize:13, fontWeight:700 }}>𝕏</span>
+                    <input value={socialTwitter} onChange={e => setSocialTwitter(e.target.value)}
+                      placeholder="usuario_twitter" style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} />
+                  </div>
+                  <div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
+                    background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
+                    <span style={{ color:'#1a4060', fontSize:13 }}>📸</span>
+                    <input value={socialInstagram} onChange={e => setSocialInstagram(e.target.value)}
+                      placeholder="usuario_instagram" style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} />
+                  </div>
+                </div>
+                <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
+                    background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
+                    <span style={{ color:'#1a4060', fontSize:13 }}>🟠</span>
+                    <input value={socialPatreon} onChange={e => setSocialPatreon(e.target.value)}
+                      placeholder="usuario_patreon" style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} />
+                  </div>
+                  <div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
+                    background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
+                    <span style={{ color:'#1a4060', fontSize:13 }}>🎵</span>
+                    <input value={socialTiktok} onChange={e => setSocialTiktok(e.target.value)}
+                      placeholder="usuario_tiktok" style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} />
+                  </div>
+                  <div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
+                    background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
+                    <span style={{ color:'#1a4060', fontSize:13 }}>▶️</span>
+                    <input value={socialYoutube} onChange={e => setSocialYoutube(e.target.value)}
+                      placeholder="canal_youtube" style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+                {perfil?.social_twitter && (
+                  <a className="social-chip" href={`https://twitter.com/${perfil.social_twitter}`} target="_blank" rel="noopener noreferrer">
+                    𝕏 @{perfil.social_twitter}
+                  </a>
+                )}
+                {perfil?.social_instagram && (
+                  <a className="social-chip" href={`https://instagram.com/${perfil.social_instagram}`} target="_blank" rel="noopener noreferrer">
+                    📸 @{perfil.social_instagram}
+                  </a>
+                )}
+                {perfil?.social_patreon && (
+                  <a className="social-chip" href={`https://patreon.com/${perfil.social_patreon}`} target="_blank" rel="noopener noreferrer">
+                    🟠 @{perfil.social_patreon}
+                  </a>
+                )}
+                {perfil?.social_tiktok && (
+                  <a className="social-chip" href={`https://tiktok.com/@${perfil.social_tiktok}`} target="_blank" rel="noopener noreferrer">
+                    🎵 @{perfil.social_tiktok}
+                  </a>
+                )}
+                {perfil?.social_youtube && (
+                  <a className="social-chip" href={`https://youtube.com/@${perfil.social_youtube}`} target="_blank" rel="noopener noreferrer">
+                    ▶️ @{perfil.social_youtube}
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+
+             <StatsBar stats={stats} />
+        </div>
 
         
-          {/* Stats bar */}
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', borderTop:'1px solid #0d2040' }}>
-            {([
-              { n: stats.obras,      label:'Obras',         icon:'🎨' },
-              { n: stats.likes,      label:'Likes totales', icon:'♥'  },
-              { n: stats.seguidores, label:'Seguidores',    icon:'👥' },
-              { n: stats.siguiendo,  label:'Siguiendo',     icon:'→'  },
-            ] as const).map((s, i) => (
-              <div key={i} className="stat-block" style={{
-                textAlign:'center', padding:'16px 8px',
-                borderRight: i < 3 ? '1px solid #0d2040' : 'none',
-                animationDelay: `${i * 80}ms`,
-              }}>
-                <div style={{ fontSize:22, fontWeight:800, color:'#00cfff', lineHeight:1 }}>{s.n}</div>
-                <div style={{ fontSize:11, color:'#1a4060', marginTop:4 }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+
 
         {/* ── Tabs ── */}
         <div style={{
@@ -627,28 +606,6 @@ placeholder="canal_youtube" style={{ background:'none', border:'none', color:'#c
             </div>
           </div>
         </div>
-      )}
-    </div>
-  )
-}
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-function EmptyState({ tab }: { tab: Tab }) {
-  return (
-    <div style={{ textAlign:'center', padding:'80px 0' }}>
-      <p style={{ fontSize:44, marginBottom:16 }}>{tab === 'obras' ? '🎨' : '♥'}</p>
-      <p style={{ color:'#1a4060', fontSize:14, marginBottom:22 }}>
-        {tab === 'obras' ? 'No has publicado obras aún.' : 'No has dado like a ninguna obra aún.'}
-      </p>
-      {tab === 'obras' && (
-        <button
-          className="btn-primary"
-          onClick={() => window.location.href = '/galeria'}
-          style={{ padding:'10px 26px', fontSize:13 }}
-        >
-          Ir a la galería →
-        </button>
       )}
     </div>
   )
