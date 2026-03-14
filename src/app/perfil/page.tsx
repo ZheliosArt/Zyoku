@@ -65,6 +65,32 @@ export default function Perfil() {
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3200)
   }, [])
 
+  // ── Social input cleaner ──────────────────────────────────────────────────
+
+  const limpiarUsername = (input: string, plataforma: 'twitter' | 'instagram' | 'youtube' | 'tiktok' | 'patreon'): string => {
+    if (!input) return ''
+    
+    let cleaned = input.trim()
+    
+    // Remover URLs completas
+    cleaned = cleaned
+      .replace(/^https?:\/\/(www\.)?/, '') // Quitar http(s)://www.
+      .replace(/^twitter\.com\//, '')
+      .replace(/^x\.com\//, '')
+      .replace(/^instagram\.com\//, '')
+      .replace(/^youtube\.com\/@?/, '')
+      .replace(/^tiktok\.com\/@?/, '')
+      .replace(/^patreon\.com\//, '')
+    
+    // Remover @ del inicio
+    cleaned = cleaned.replace(/^@/, '')
+    
+    // Remover cualquier cosa después de / o ?
+    cleaned = cleaned.split('/')[0].split('?')[0]
+    
+    return cleaned
+  }
+
   // ── Data loading ──────────────────────────────────────────────────────────
 
   useEffect(() => {
@@ -424,39 +450,65 @@ setSubiendoBanner(false)
             {editando ? (
               <div style={{ display:'flex', gap:10, flexWrap:'wrap', flexDirection:'column' }}>
                 <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+
                   <div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
                     background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
                     <span style={{ color:'#1a4060', fontSize:13, fontWeight:700 }}>𝕏</span>
-                    <input value={socialTwitter} onChange={e => setSocialTwitter(e.target.value)}
-                      placeholder="usuario_twitter" style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} />
-                  </div>
+                    <input value={socialTwitter} 
+                        onChange={e => setSocialTwitter(limpiarUsername(e.target.value, 'twitter'))}
+                        placeholder="usuario" 
+                        style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} 
+                    />
+                    </div>
+
+
                   <div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
                     background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
                     <span style={{ color:'#1a4060', fontSize:13 }}>📸</span>
-                    <input value={socialInstagram} onChange={e => setSocialInstagram(e.target.value)}
-                      placeholder="usuario_instagram" style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} />
-                  </div>
+                    <input 
+                    value={socialInstagram} 
+                    onChange={e => setSocialInstagram(limpiarUsername(e.target.value, 'instagram'))}
+                    placeholder="usuario" 
+                    style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} 
+                    />
                 </div>
+                </div>
+
                 <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
                     background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
                     <span style={{ color:'#1a4060', fontSize:13 }}>🟠</span>
-                    <input value={socialPatreon} onChange={e => setSocialPatreon(e.target.value)}
-                      placeholder="usuario_patreon" style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} />
-                  </div>
+                    <input 
+                        value={socialPatreon} 
+                        onChange={e => setSocialPatreon(limpiarUsername(e.target.value, 'patreon'))}
+                        placeholder="usuario" 
+                        style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} 
+                        />
+                        </div>
+
+
                   <div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
                     background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
                     <span style={{ color:'#1a4060', fontSize:13 }}>🎵</span>
-                    <input value={socialTiktok} onChange={e => setSocialTiktok(e.target.value)}
-                      placeholder="usuario_tiktok" style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} />
-                  </div>
+                    <input 
+                        value={socialTiktok} 
+                        onChange={e => setSocialTiktok(limpiarUsername(e.target.value, 'tiktok'))}
+                        placeholder="usuario" 
+                        style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} 
+                        />
+                        </div>
+
                   <div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:160,
                     background:'#07111f', border:'1px solid #0d2040', borderRadius:10, padding:'7px 12px' }}>
                     <span style={{ color:'#1a4060', fontSize:13 }}>▶️</span>
-                    <input value={socialYoutube} onChange={e => setSocialYoutube(e.target.value)}
-                      placeholder="canal_youtube" style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} />
-                  </div>
-                </div>
+                    <input 
+                        value={socialYoutube} 
+                        onChange={e => setSocialYoutube(limpiarUsername(e.target.value, 'youtube'))}
+                        placeholder="canal" 
+                        style={{ background:'none', border:'none', color:'#c8e0f4', fontSize:13, width:'100%', outline:'none', fontFamily:'sans-serif' }} 
+                        />                        
+                        </div>
+                    </div>
               </div>
             ) : (
               <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
