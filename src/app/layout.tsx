@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 title: 'Zyoku',
 description: 'Comunidad de arte anime y manga',
 icons: {
-icon: '/Zyoku-logo-provisional.jpg', // Esto busca el archivo en la carpeta public o app
+icon: '/Logo-Zyoku.avif', // Esto busca el archivo en la carpeta public o app
 },
 };
 
