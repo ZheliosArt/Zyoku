@@ -20,6 +20,7 @@ export interface Usuario {
   social_youtube: string | null      // ← NUEVO
   location: string | null            // ← NUEVO
   pronoun: string | null             // ← NUEVO
+  commissions_open: boolean | null // ← NUEVO 
 }
 
 // Tipo de obra
