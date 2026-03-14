@@ -1,32 +1,21 @@
 /**
- * Limpia y extrae el username de URLs de redes sociales
- * Soporta URLs completas, usernames con @, y usernames simples
+ * Limpia una URL o un handle de red social para mostrar solo el nombre de usuario.
+ * Elimina protocolos (http/https), dominios y símbolos como '@'.
  */
-export const limpiarUsername = (
-  input: string, 
-  plataforma: 'twitter' | 'instagram' | 'youtube' | 'tiktok' | 'patreon'
-): string => {
-  if (!input) return ''
+
+//Ruta: src/app/perfil/utils/helpers.ts
+
+export const limpiarUsername = (valor: string): string => {
+  if (!valor) return ''
   
-  let cleaned = input.trim()
-  
-  // Si ya es solo un username (sin puntos ni barras), devolver directo
-  if (!/[.\/]/.test(cleaned) && !cleaned.startsWith('@')) {
-    return cleaned
-  }
-  
-  // Remover protocolo y www
-  cleaned = cleaned.replace(/^https?:\/\/(www\.)?/, '')
-  
-  // Extraer username según plataforma
-  const patterns: Record<typeof plataforma, RegExp> = {
-    twitter: /^(?:twitter\.com\/|x\.com\/)?@?([^\/\?&#]+)/,
-    instagram: /^(?:instagram\.com\/)?@?([^\/\?&#]+)/,
-    youtube: /^(?:youtube\.com\/)?@?([^\/\?&#]+)/,
-    tiktok: /^(?:tiktok\.com\/)?@?([^\/\?&#]+)/,
-    patreon: /^(?:patreon\.com\/)?([^\/\?&#]+)/
-  }
-  
-  const match = cleaned.match(patterns[plataforma])
-  return match ? match[1] : cleaned.split(/[\/\?&#]/)[0].replace(/^@/, '')
+  return valor
+    .trim()
+    .replace(/^(https?:\/\/)?(www\.)?(twitter\.com|instagram\.com|patreon\.com|tiktok\.com|youtube\.com)\//, '')
+    .replace(/\/$/, '') // Elimina la barra final si existe
+    .replace(/^@/, '')  // Elimina el @ inicial si el usuario lo escribió
 }
+
+/**
+ * Puedes agregar aquí otras funciones de utilidad que necesites en el futuro,
+ * como formateadores de fechas o validadores de texto.
+ */
