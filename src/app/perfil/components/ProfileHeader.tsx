@@ -124,7 +124,7 @@ onClick={() => editando && avatarRef.current?.click()}
 >
 <img
 src={avatarUrl}
-style={{ width:100, height:100, borderRadius:'50%', border:'4px solid #0a1628', boxShadow:'0 0 0 2px #00cfff33', objectFit:'cover', display:'block' }}
+style={{ width:150, height:150, borderRadius:'50%', border:'4px solid #0a1628', boxShadow:'0 0 0 2px #00cfff33', objectFit:'cover', display:'block' }}
 />
 <div style={{ position:'absolute', bottom:6, right:6, width:14, height:14, borderRadius:'50%', background:'#00cfff', border:'2px solid #0a1628' }}/>
 {editando && (
