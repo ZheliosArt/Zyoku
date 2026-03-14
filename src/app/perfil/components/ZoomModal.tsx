@@ -1,68 +1,77 @@
 "use client"
-
-import type { Obra, Tab } from '../utils/types'
+import { useEffect } from 'react'
+import type { Obra } from '../utils/types'
 
 interface ZoomModalProps {
-  obra: Obra | null
-  tab: Tab
-  onClose: () => void
-  onDelete: (obra: Obra, e: React.MouseEvent) => void
+obra: Obra | null
+obras: Obra[] // Añadimos la lista completa
+onClose: () => void
+onNext: () => void // Función para ir a la siguiente
+onPrev: () => void // Función para ir a la anterior
+onDelete: (obra: Obra, e: React.MouseEvent) => void
 }
 
-export default function ZoomModal({ obra, tab, onClose, onDelete }: ZoomModalProps) {
-  if (!obra) return null
+export default function ZoomModal({ obra, obras, onClose, onNext, onPrev, onDelete }: ZoomModalProps) {
+useEffect(() => {
+const handleKeyDown = (e: KeyboardEvent) => {
+if (e.key === 'Escape') onClose()
+if (e.key === 'ArrowRight') onNext()
+if (e.key === 'ArrowLeft') onPrev()
+}
+window.addEventListener('keydown', handleKeyDown)
+return () => window.removeEventListener('keydown', handleKeyDown)
+}, [onClose, onNext, onPrev])
 
-  return (
-    <div
-      onClick={onClose}
-      style={{
-        position:'fixed', inset:0, zIndex:300,
-        background:'#000000ee', backdropFilter:'blur(16px)',
-        display:'flex', alignItems:'center', justifyContent:'center',
-        padding:20, cursor:'zoom-out',
-      }}
-    >
-      <div
-        onClick={e => e.stopPropagation()}
-        className="card scale-in"
-        style={{ maxWidth:900, width:'100%', overflow:'hidden', cursor:'default' }}
-      >
-        <img
-          src={obra.imagen_url}
-          style={{ width:'100%', maxHeight:'70vh', objectFit:'contain', display:'block' }}
-          alt={obra.titulo}
-        />
-        <div style={{ padding:'16px 22px', display:'flex', justifyContent:'space-between', alignItems:'center', gap:12, flexWrap:'wrap' }}>
-          <div>
-            <p style={{ color:'#e8f4ff', fontWeight:800, fontSize:16 }}>{obra.titulo}</p>
-            {obra.descripcion && (
-              <p style={{ color:'#3a6688', fontSize:13, marginTop:5, lineHeight:1.6 }}>{obra.descripcion}</p>
-            )}
-            <p style={{ color:'#1a4060', fontSize:11, marginTop:6 }}>
-              {new Date(obra.created_at).toLocaleDateString('es-MX', { year:'numeric', month:'long', day:'numeric' })}
-            </p>
-          </div>
-          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-            <span style={{ color:'#ff6b9d', fontSize:16, fontWeight:700 }}>♥ {obra.likes_count || 0}</span>
-            {obra.tipo && (
-              <span className="tipo-pill">{obra.tipo.toUpperCase()}</span>
-            )}
-            {tab === 'obras' && (
-              <button className="delete-btn" onClick={e => onDelete(obra, e)}>
-                Eliminar
-              </button>
-            )}
-            <button
-              onClick={onClose}
-              className="btn-ghost"
-              style={{ width:34, height:34, borderRadius:'50%', fontSize:18, padding:0,
-                display:'flex', alignItems:'center', justifyContent:'center' }}
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+if (!obra) return null
+
+return (
+<div 
+className="modal-overlay" 
+style={{
+position: 'fixed', inset: 0, background: 'rgba(5, 13, 26, 0.95)',
+display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
+backdropFilter: 'blur(8px)'
+}}
+onClick={onClose}
+>
+{/* Botón Anterior */}
+<button 
+onClick={(e) => { e.stopPropagation(); onPrev(); }}
+style={{ position: 'absolute', left: 20, background: 'none', border: 'none', color: '#fff', fontSize: 40, cursor: 'pointer', zIndex: 10 }}
+>
+‹
+</button>
+
+<div 
+style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }}
+onClick={(e) => e.stopPropagation()}
+>
+<img 
+src={obra.imagen_url} 
+alt={obra.titulo}
+style={{ maxWidth: '100%', maxHeight: '80vh', borderRadius: 8, boxShadow: '0 0 30px rgba(0,0,0,0.5)' }} 
+/>
+<div style={{ marginTop: 15, textAlign: 'center' }}>
+<h3 style={{ color: '#e8f4ff', margin: 0 }}>{obra.titulo}</h3>
+<p style={{ color: '#ff6b9d' }}>♥ {obra.likes_count || 0} likes</p>
+</div>
+</div>
+
+{/* Botón Siguiente */}
+<button 
+onClick={(e) => { e.stopPropagation(); onNext(); }}
+style={{ position: 'absolute', right: 20, background: 'none', border: 'none', color: '#fff', fontSize: 40, cursor: 'pointer', zIndex: 10 }}
+>
+›
+</button>
+
+{/* Botón Cerrar */}
+<button 
+onClick={onClose}
+style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', color: '#fff', fontSize: 24, cursor: 'pointer' }}
+>
+✕
+</button>
+</div>
+)
 }
