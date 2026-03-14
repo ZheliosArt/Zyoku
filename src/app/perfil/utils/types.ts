@@ -1,4 +1,10 @@
 // Tipo de usuario
+//Ruta: src/app/perfil/utils/types.ts
+export const TAB_OPTIONS = ['obras', 'likes', 'guardados'] as const;
+export type Tab = typeof TAB_OPTIONS[number];
+
+
+
 export interface Usuario {
   id: string
   username: string
@@ -43,6 +49,3 @@ export interface ToastItem {
   msg: string
   tipo: 'ok' | 'err'
 }
-
-// Tipo de tab activo
-export type Tab = 'obras' | 'likes'
