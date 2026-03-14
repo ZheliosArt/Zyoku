@@ -142,14 +142,13 @@ const { error } = await supabase.from('Usuarios').update({
 bio, username, social_twitter: socialTwitter, social_instagram: socialInstagram,
 social_patreon: socialPatreon, social_tiktok: socialTiktok, social_youtube: socialYoutube,
 location: locationText, pronoun: pronounText, banner_color_idx: bannerIdx, banner_url: bannerUrl,
-commissions_open: commissionsOpen, // <--- NUEVA LÍNEA
-tipo: tipoText // <--- NUEVA LÍNEA
-
+commissions_open: commissionsOpen, 
+tipo: tipoText
 }).eq('id', user.id)
 
 if (error) toast('Error al guardar cambios', 'err')
 else {
-setPerfil(prev => prev ? { ...prev, bio, username, location: locationText, pronoun: pronounText, commissions_open: commissionsOpen } : prev) // <--- ACTUALIZADO
+setPerfil(prev => prev ? { ...prev, bio, username, location: locationText, pronoun: pronounText, commissions_open: commissionsOpen, tipo: tipoText } : prev) 
 toast('✓ Perfil actualizado'); setEditando(false)
 }
 setGuardando(false)
@@ -230,7 +229,13 @@ if (!confirm(`¿Quitar "${obra.titulo}" de esta carpeta?`)) return
 const { error } = await supabase.from('obras_guardadas').delete().eq('obra_id', obra.id).eq('coleccion_id', colSeleccionada.id)
 if (error) toast('Error al quitar', 'err')
 else {
-setObrasDeColeccion(prev => prev.filter(o => o.id !== obra.id))
+const nuevasObras = obrasDeColeccion.filter(o => o.id !== obra.id)
+setObrasDeColeccion(nuevasObras)
+setColecciones(prev => prev.map(c => c.id === colSeleccionada.id ? { 
+...c, 
+portada_url: nuevasObras.length > 0 ? nuevasObras[0].imagen_url : null,
+obras_guardadas: [{ count: Math.max(0, (c.obras_guardadas[0]?.count || 0) - 1) }] 
+} : c))
 toast('Obra quitada de la carpeta')
 }
 } else {
@@ -252,7 +257,13 @@ if (!confirm(`¿Quitar ${seleccionadas.length} obras?`)) return
 const { error } = await supabase.from('obras_guardadas').delete().in('obra_id', seleccionadas).eq('coleccion_id', colSeleccionada.id)
 if (error) toast('Error', 'err')
 else {
-setObrasDeColeccion(prev => prev.filter(o => !seleccionadas.includes(o.id)))
+const nuevasObras = obrasDeColeccion.filter(o => !seleccionadas.includes(o.id))
+setObrasDeColeccion(nuevasObras)
+setColecciones(prev => prev.map(c => c.id === colSeleccionada.id ? { 
+...c, 
+portada_url: nuevasObras.length > 0 ? nuevasObras[0].imagen_url : null,
+obras_guardadas: [{ count: Math.max(0, (c.obras_guardadas[0]?.count || 0) - seleccionadas.length) }] 
+} : c))
 setSeleccionadas([]); setModoGestion(false)
 toast('Obras quitadas')
 }
