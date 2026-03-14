@@ -19,7 +19,6 @@ export default function WorksTabs({
   likesCount, 
   guardadosCount 
 }: WorksTabsProps) {
-  // Array local (as const) para que el tipo sea exacto y no dependa de import
   const TAB_OPTIONS = ['obras', 'likes', 'guardados'] as const
 
   return (
