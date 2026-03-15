@@ -270,14 +270,16 @@ toast('Obras quitadas')
 }
 
 const goToNext = () => {
-if (!obrasActivas.length) return
+if (!obraZoom || !obrasActivas.length) return // <--- AGREGAMOS !obraZoom
 const idx = obrasActivas.findIndex(o => o.id === obraZoom?.id)
+if (idx === -1) return
 setObraZoom(obrasActivas[(idx + 1) % obrasActivas.length])
 }
 
 const goToPrev = () => {
-if (!obrasActivas.length) return
+if (!obraZoom || !obrasActivas.length) return // <--- AGREGAMOS !obraZoom
 const idx = obrasActivas.findIndex(o => o.id === obraZoom?.id)
+if (idx === -1) return
 setObraZoom(obrasActivas[idx <= 0 ? obrasActivas.length - 1 : idx - 1])
 }
 
@@ -387,8 +389,19 @@ setTipoText={setTipoText}
 </div>
 )}
 
-<ZoomModal obra={obraZoom} obras={obrasActivas} colecciones={colecciones} onSave={handleGuardarEnColeccion} onClose={() => setObraZoom(null)} onNext={goToNext} onPrev={goToPrev} onDelete={eliminarObraSmart} />
-</div>
+{/* Solo renderizamos el Modal si realmente hay una obra seleccionada */}
+{obraZoom && (
+<ZoomModal 
+obra={obraZoom} 
+obras={obrasActivas} 
+colecciones={colecciones} 
+onSave={handleGuardarEnColeccion} 
+onClose={() => setObraZoom(null)} 
+onNext={goToNext} 
+onPrev={goToPrev} 
+onDelete={eliminarObraSmart} 
+/>
+)}</div>
 </div>
 )
 }
