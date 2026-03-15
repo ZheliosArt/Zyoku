@@ -2,6 +2,7 @@
 
 import type { Usuario } from '../utils/types'
 import { TIPO_LABELS } from '../utils/constants'
+import ShareProfile from './ShareProfile'
 
 interface ProfileInfoProps {
 editando: boolean
@@ -18,6 +19,7 @@ setLocationText: (value: string) => void
 setPronounText: (value: string) => void
 setCommissionsOpen: (value: boolean) => void
 setTipoText: (value: string) => void // <--- NUEVA PROP
+
 }
 
 export default function ProfileInfo({
@@ -91,15 +93,21 @@ Abrir comisiones (mostrar correo públicamente)
 {nombreMostrado} {perfil?.pronoun && <span style={{ fontSize:14, color:'#8ab4cc', fontWeight:400 }}>({perfil.pronoun})</span>}
 </h1>
 )}
-<div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
+
+<div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap', marginTop: 10 }}>
+{/* CONDICIÓN PARA MOSTRAR CORREO Y BADGE */}
 {commissionsOpen && (
 <>
 <span style={{ color:'#1a4060', fontSize:12 }}>{userEmail}</span>
-<span style={{ background:'#10b981', color:'#fff', fontSize:10, fontWeight:800, padding:'2px 8px', borderRadius:12 }}>
+<span style={{ background:'#10b981', color:'#fff', fontSize:10, fontWeight:800, padding:'2px 8px', borderRadius:12, textTransform: 'uppercase' }}>
 ✨ COMISIONES ABIERTAS
 </span>
 </>
 )}
+
+{/* NUEVO BOTÓN DE COMPARTIR (Justo después del correo) */}
+<ShareProfile username={nombreMostrado} />
+
 <span className="tipo-pill">{TIPO_LABELS[perfil?.tipo || 'fan'] || (perfil?.tipo?.toUpperCase()) || 'FAN'}</span>
 {!editando && perfil?.location && (
 <span style={{ color:'#8ab4cc', fontSize:12 }}>📍 {perfil.location}</span>
