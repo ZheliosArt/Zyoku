@@ -2,7 +2,6 @@
 
 import type { Usuario } from '../utils/types'
 import { TIPO_LABELS } from '../utils/constants'
-import ShareProfile from './ShareProfile'
 
 interface ProfileInfoProps {
 editando: boolean
@@ -104,9 +103,6 @@ Abrir comisiones (mostrar correo públicamente)
 </span>
 </>
 )}
-
-{/* NUEVO BOTÓN DE COMPARTIR (Justo después del correo) */}
-<ShareProfile username={nombreMostrado} />
 
 <span className="tipo-pill">{TIPO_LABELS[perfil?.tipo || 'fan'] || (perfil?.tipo?.toUpperCase()) || 'FAN'}</span>
 {!editando && perfil?.location && (

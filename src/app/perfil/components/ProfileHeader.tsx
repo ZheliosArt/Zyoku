@@ -1,3 +1,4 @@
+//Ruta: src/app/perfil/components/ProfileHeader.tsx
 "use client"
 
 import { RefObject } from 'react'
