@@ -53,7 +53,7 @@ placeholder="Nombre de usuario"
 value={locationText} 
 onChange={e => setLocationText(e.target.value)} 
 className="field"
-style={{ fontSize:13, maxWidth:135 }} 
+style={{ fontSize:13, maxWidth:135, marginLeft: 'auto' }} 
 placeholder="📍 Ubicación" 
 />
 <input 
