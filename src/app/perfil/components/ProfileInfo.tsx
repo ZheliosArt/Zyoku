@@ -57,11 +57,17 @@ style={{ fontSize:13, maxWidth:135 }}
 placeholder="📍 Ubicación" 
 />
 <input 
-value={pronounText} 
-onChange={e => setPronounText(e.target.value)} 
-className="field"
-style={{ fontSize:13, maxWidth:135 }} 
-placeholder="🗣️ Pronombres" 
+  // Usamos un template literal para agregar el @ visualmente
+  value={`@${pronounText || ''}`} 
+  onChange={e => {
+    const val = e.target.value;
+    // Si el valor empieza con @, lo quitamos antes de guardarlo en el estado
+    const cleanVal = val.startsWith('@') ? val.slice(1) : val;
+    setPronounText(cleanVal);
+  }} 
+  className="field"
+  style={{ fontSize:13, maxWidth:135 }} 
+  placeholder="🗣️ Nickname" 
 />
 {/* NUEVO DESPLEGABLE DE TIPO */}
 <select
