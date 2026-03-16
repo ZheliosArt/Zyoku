@@ -101,7 +101,8 @@ return (
 <button 
 key={col.id} 
 disabled={yaGuardada}
-// Pasamos el nombre al handleSave para el toast
+
+// En ZoomModal.tsx, busca el onClick del guardado:
 onClick={() => onSave(obra.id, col.id, col.nombre)}
 style={{
 width: '100%', padding: '10px 14px', background: yaGuardada ? '#1e2f4d':'#0d2040', 
