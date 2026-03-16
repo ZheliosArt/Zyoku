@@ -1,12 +1,14 @@
-//Ruta: src/app/perfil/components/ProfileHeader.tsx
 "use client"
+// Ruta: src/app/perfil/components/ProfileHeader.tsx
 
 import { RefObject } from 'react'
 import type { Usuario } from '../utils/types'
 import { BANNER_PRESETS } from '../utils/constants'
-import ShareProfile from './ShareProfile' // <--- IMPORTACIÓN NECESARIA
+import ShareProfile from './ShareProfile'
+import FollowButton from '@/components/FollowButton' // <--- Importación preferida con @
 
 interface ProfileHeaderProps {
+currentUserId?: string
 editando: boolean
 guardando: boolean
 subiendoAvatar: boolean
@@ -28,6 +30,7 @@ cerrarSesion: () => void
 }
 
 export default function ProfileHeader({
+currentUserId,
 editando,
 guardando,
 subiendoAvatar,
@@ -47,18 +50,24 @@ cancelarEdicion,
 setEditando,
 cerrarSesion
 }: ProfileHeaderProps) {
+  
+// Preparamos el preset del banner
 const banner = BANNER_PRESETS[bannerIdx] ?? BANNER_PRESETS[0]
+
+// LOG de depuración (del Snippet 1) para monitorear los IDs en consola
+console.log("ProfileHeader - IDs:", { current: currentUserId, profile: perfil?.id });
+
+// Lógica de validación de dueño (Combinada y robusta)
+const esMiPerfil = currentUserId && perfil?.id && currentUserId === perfil.id;
 
 return (
 <>
-{/* Banner */}
+{/* SECCIÓN 1: BANNER */}
 <div style={{
 height: 320, 
 position: 'relative', 
 overflow: 'hidden',
-background: bannerUrl 
-? `url(${bannerUrl}) center/cover`
-: banner.bg,
+background: bannerUrl ? `url(${bannerUrl}) center/cover` : banner.bg,
 borderRadius: '20px 20px 0 0',
 }}>
 {!bannerUrl && (
@@ -69,7 +78,7 @@ borderRadius: '20px 20px 0 0',
 )}
 
 {editando && (
-<div style={{ position:'absolute', bottom:10, right:14, display:'flex', gap:7, alignItems:'center', flexWrap:'wrap' }}>
+<div style={{ position:'absolute', bottom:10, right:14, display:'flex', gap:7, alignItems:'center', flexWrap:'wrap', zIndex: 10 }}>
 <button className="banner-upload-btn" onClick={() => bannerRef.current?.click()} disabled={subiendoBanner}>
 {subiendoBanner ? '...' : '📷 Subir foto'}
 </button>
@@ -95,11 +104,12 @@ transition: 'all .15s',
 <input ref={bannerRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => e.target.files?.[0] && subirBanner(e.target.files[0])} />
 </div>
 
-{/* Fila del Avatar y Botones */}
+{/* SECCIÓN 2: AVATAR Y BOTONES DE ACCIÓN */}
 <div style={{
 display:'flex', justifyContent:'space-between', alignItems:'flex-end',
 flexWrap:'wrap', gap:12, marginTop:-50, marginBottom:18, padding: '0 16px'
 }}>
+{/* Contenedor del Avatar */}
 <div style={{ position:'relative', cursor: editando ? 'pointer' : 'default' }} onClick={() => editando && avatarRef.current?.click()}>
 <img src={avatarUrl} style={{ width:170, height:170, borderRadius:'50%', border:'4px solid #0a1628', boxShadow:'0 0 0 2px #00cfff33', objectFit:'cover', display:'block' }} />
 <div style={{ position:'absolute', bottom:6, right:6, width:14, height:14, borderRadius:'50%', background:'#00cfff', border:'2px solid #0a1628' }}/>
@@ -120,7 +130,17 @@ onMouseLeave={e => { if(!subiendoAvatar)(e.currentTarget.style.opacity = '0') }}
 <input ref={avatarRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => e.target.files?.[0] && subirAvatar(e.target.files[0])} />
 </div>
 
+{/* Bloque de Botones dinámicos */}
 <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom: 5, alignItems: 'center' }}>
+{currentUserId && !esMiPerfil ? (
+/* CASO: Visitante (No es mi perfil) */
+<>
+<FollowButton currentUserId={currentUserId} targetUserId={perfil?.id || ''} />
+<ShareProfile username={perfil?.username || 'Usuario'} />
+</>
+) : (
+/* CASO: Dueño del perfil o Cargando sesión */
+<>
 {editando ? (
 <>
 <button className="btn-primary" onClick={guardarPerfil} disabled={guardando} style={{ padding:'8px 22px', fontSize:13 }}>
@@ -139,6 +159,8 @@ Cancelar
 <button className="btn-ghost" onClick={cerrarSesion} style={{ padding:'8px 16px', fontSize:13, color:'#ff6b9dcc', borderColor:'#2a1020' }}>
 Salir
 </button>
+</>
+)}
 </>
 )}
 </div>

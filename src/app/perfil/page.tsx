@@ -21,7 +21,7 @@ import ProfileBio from './components/ProfileBio'
 import ProfileInfo from './components/ProfileInfo'
 import WorksTabs from './components/WorksTabs'
 import WorksGrid from './components/WorksGrid'
-import ZoomModal from './components/ZoomModal'
+import ZoomModal from '../../components/ZoomModal'
 import ProfileHeader from './components/ProfileHeader'
 import CollectionsGrid from './components/CollectionsGrid'
 
@@ -184,6 +184,27 @@ await supabase.auth.signOut()
 window.location.href = '/'
 }
 
+// Agrega esto dentro de tu función Perfil(), antes del return:
+
+const eliminarBanner = () => {
+setBannerUrl(null);
+setBannerIdx(0);
+toast('✓ Imagen de banner quitada');
+};
+
+const cancelarEdicion = () => {
+if (perfil) {
+setBio(perfil.bio || '');
+setUsername(perfil.username || '');
+setBannerIdx(perfil.banner_color_idx ?? 0);
+setCommissionsOpen(perfil.commissions_open || false);
+setTipoText(perfil.tipo || 'fan');
+// Resetear el resto de campos...
+}
+setEditando(false);
+};
+
+
 // ── Acciones de Obras y Colecciones ────────────────────────────────────────
 
 const handleGuardarEnColeccion = async (obraId: any, coleccionId: string) => {
@@ -337,17 +358,38 @@ if(!error) setColecciones(prev => prev.filter(c => c.id !== col.id))
 if (loading) return <LoadingSkeleton />
 if (!user) return null
 
+
 return (
 <div style={{ background:'#050d1a', minHeight:'100vh', color:'#c8e0f4', fontFamily:'sans-serif' }}>
 <style>{CSS}</style>
 <ToastContainer toasts={toasts} />
 <div style={{ maxWidth: 1000, margin: '0 auto', padding: '40px 4%' }}>
 <div className="card fade-up" style={{ marginBottom: 20, overflow: 'hidden' }}>
-<ProfileHeader editando={editando} guardando={guardando} subiendoAvatar={subiendoAvatar} subiendoBanner={subiendoBanner} bannerUrl={bannerUrl} bannerIdx={bannerIdx} avatarUrl={perfil?.avatar_url || user.user_metadata?.avatar_url} perfil={perfil} avatarRef={avatarRef} bannerRef={bannerRef} setBannerIdx={setBannerIdx} eliminarBanner={() => setBannerUrl(null)} subirBanner={subirBanner} subirAvatar={subirAvatar} guardarPerfil={guardarPerfil} cancelarEdicion={() => setEditando(false)} setEditando={setEditando} cerrarSesion={cerrarSesion} />
+
+{/* --- AQUÍ ESTABA EL ERROR: Faltaba insertar el Header --- */}
+<ProfileHeader 
+currentUserId={user?.id}
+editando={editando}
+guardando={guardando}
+subiendoAvatar={subiendoAvatar}
+subiendoBanner={subiendoBanner}
+bannerUrl={bannerUrl}
+bannerIdx={bannerIdx}
+avatarUrl={perfil?.avatar_url || '/default-avatar.png'}
+perfil={perfil}
+avatarRef={avatarRef}
+bannerRef={bannerRef}
+setBannerIdx={setBannerIdx}
+eliminarBanner={eliminarBanner}
+subirBanner={subirBanner}
+subirAvatar={subirAvatar}
+guardarPerfil={guardarPerfil}
+cancelarEdicion={cancelarEdicion}
+setEditando={setEditando}
+cerrarSesion={cerrarSesion}
+/>
 
 <div style={{ padding: '0 28px 28px' }}>
-
-
 <ProfileInfo 
 editando={editando} 
 perfil={perfil} 
@@ -356,19 +398,32 @@ nombreMostrado={perfil?.username || 'Usuario'}
 username={username} 
 locationText={locationText} 
 pronounText={pronounText} 
-commissionsOpen={commissionsOpen} // <--- NUEVA LÍNEA
+commissionsOpen={commissionsOpen}
 setUsername={setUsername} 
 setLocationText={setLocationText} 
 setPronounText={setPronounText} 
-setCommissionsOpen={setCommissionsOpen} // <--- NUEVA LÍNEA
+setCommissionsOpen={setCommissionsOpen}
 tipoText={tipoText}
 setTipoText={setTipoText}
 />
 
 <ProfileBio editando={editando} bio={bio} setBio={setBio} />
-<SocialLinks editando={editando} perfil={perfil} socialTwitter={socialTwitter} socialInstagram={socialInstagram} socialPatreon={socialPatreon} socialTiktok={socialTiktok} socialYoutube={socialYoutube} setSocialTwitter={setSocialTwitter} setSocialInstagram={setSocialInstagram} setSocialPatreon={setSocialPatreon} setSocialTiktok={setSocialTiktok} setSocialYoutube={setSocialYoutube} limpiarUsername={limpiarUsername} />
+<SocialLinks 
+editando={editando} 
+perfil={perfil} 
+socialTwitter={socialTwitter} 
+socialInstagram={socialInstagram} 
+socialPatreon={socialPatreon} 
+socialTiktok={socialTiktok} 
+socialYoutube={socialYoutube} 
+setSocialTwitter={setSocialTwitter} 
+setSocialInstagram={setSocialInstagram} 
+setSocialPatreon={setSocialPatreon} 
+setSocialTiktok={setSocialTiktok} 
+setSocialYoutube={setSocialYoutube} 
+limpiarUsername={limpiarUsername} 
+/>
 </div>
-
 
 <StatsBar stats={stats} />
 </div>
@@ -376,6 +431,7 @@ setTipoText={setTipoText}
 <WorksTabs tab={tab} setTab={setTab} obrasCount={stats.obras} likesCount={obrasLikeadas.length} guardadosCount={guardadosCount} />
 {renderContent()}
 
+{/* Modales de Colecciones y Zoom */}
 {showModalCol && (
 <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.85)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000, padding:20 }}>
 <div className="card scale-in" style={{ width:'100%', maxWidth:400, padding:24 }}>
@@ -389,7 +445,6 @@ setTipoText={setTipoText}
 </div>
 )}
 
-{/* Solo renderizamos el Modal si realmente hay una obra seleccionada */}
 {obraZoom && (
 <ZoomModal 
 obra={obraZoom} 
@@ -401,7 +456,7 @@ onNext={goToNext}
 onPrev={goToPrev} 
 onDelete={eliminarObraSmart} 
 />
-)}</div>
+)}
 </div>
-)
-}
+</div>
+)}
