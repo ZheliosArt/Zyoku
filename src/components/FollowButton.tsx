@@ -7,16 +7,12 @@ import { useFollow } from '../app/hooks/useFollow';
 export default function FollowButton({ currentUserId, targetUserId }: { currentUserId: string | undefined, targetUserId: string }) {
   const { isFollowing, toggleFollow, loading } = useFollow(currentUserId, targetUserId);
 
-  // LOG de depuración
-  console.log("FollowButton - IDs:", { currentUserId, targetUserId, isFollowing });
-
   if (!currentUserId || currentUserId === targetUserId) return null;
 
   return (
-    <button 
+    <button
       onClick={(e) => {
         e.preventDefault();
-        console.log("Clic en Seguir...");
         toggleFollow();
       }}
       disabled={loading}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 
 const canales = [
@@ -21,13 +21,9 @@ export default function Comunidad() {
   const [contenido, setContenido]   = useState("")
   const [canalNuevo, setCanalNuevo] = useState("general")
   const [loading, setLoading]       = useState(true)
+  const [votados, setVotados]       = useState<Record<number, boolean>>({})
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => setUser(user))
-    cargarHilos()
-  }, [canal])
-
-  const cargarHilos = async () => {
+  const cargarHilos = useCallback(async () => {
     setLoading(true)
     let query = supabase
       .from('hilos')
@@ -39,7 +35,22 @@ export default function Comunidad() {
     const { data, error } = await query
     if (!error) setHilos(data || [])
     setLoading(false)
-  }
+  }, [canal])
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => setUser(user))
+    cargarHilos()
+  }, [cargarHilos])
+
+  // Cargar los votos que el usuario ya emitió (para marcar el estado del botón)
+  useEffect(() => {
+    if (!user) { setVotados({}); return }
+    supabase.from('hilo_votos').select('hilo_id').eq('usuario_id', user.id).then(({ data }) => {
+      const m: Record<number, boolean> = {}
+      data?.forEach((v: any) => { m[v.hilo_id] = true })
+      setVotados(m)
+    })
+  }, [user])
 
   const publicarHilo = async () => {
     if (!titulo.trim() || !user) return
@@ -57,10 +68,21 @@ export default function Comunidad() {
     }
   }
 
+  // El contador `votos` lo mantiene un trigger sobre la tabla `hilo_votos`.
   const votar = async (hilo: any) => {
     if (!user) return
-    await supabase.from('hilos').update({ votos: hilo.votos + 1 }).eq('id', hilo.id)
-    setHilos(prev => prev.map(h => h.id === hilo.id ? { ...h, votos: h.votos + 1 } : h))
+    const yaVotado = votados[hilo.id]
+    const delta = yaVotado ? -1 : 1
+
+    // Actualización optimista
+    setVotados(prev => ({ ...prev, [hilo.id]: !yaVotado }))
+    setHilos(prev => prev.map(h => h.id === hilo.id ? { ...h, votos: Math.max(0, (h.votos || 0) + delta) } : h))
+
+    if (yaVotado) {
+      await supabase.from('hilo_votos').delete().eq('usuario_id', user.id).eq('hilo_id', hilo.id)
+    } else {
+      await supabase.from('hilo_votos').insert({ usuario_id: user.id, hilo_id: hilo.id })
+    }
   }
 
   const fmt = (n: number) => n >= 1000 ? (n/1000).toFixed(1)+'k' : n
@@ -123,7 +145,7 @@ export default function Comunidad() {
                     <div style={{ display:'flex', gap:12 }}>
                       {/* Votos */}
                       <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, flexShrink:0 }}>
-                        <button onClick={() => votar(h)} style={{ background:'transparent', border:'1px solid #0d2040', color:'#3a6688', width:30, height:30, borderRadius:8, cursor:'pointer', fontSize:12 }}>▲</button>
+                        <button onClick={() => votar(h)} style={{ background: votados[h.id] ? '#00cfff15' : 'transparent', border:`1px solid ${votados[h.id] ? '#00cfff' : '#0d2040'}`, color: votados[h.id] ? '#00cfff' : '#3a6688', width:30, height:30, borderRadius:8, cursor:'pointer', fontSize:12 }}>▲</button>
                         <span style={{ fontSize:13, fontWeight:800, color:'#c8e0f4' }}>{fmt(h.votos)}</span>
                       </div>
                       {/* Contenido */}

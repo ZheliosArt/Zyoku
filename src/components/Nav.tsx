@@ -33,8 +33,6 @@ return () => subscription.unsubscribe()
 // Notificaciones (Solo se activan si hay un usuario logueado)
 const { notifications, unreadCount, markAllAsRead } = useNotifications(user?.id)
 
-console.log("Nav state - userId:", user?.id, "unreadCount:", unreadCount, "notifs length:", notifications.length); // <-- LOG 9
-
 const links = [
 { href: '/',         label: 'Inicio'     },
 { href: '/galeria',   label: 'Galería'    },
@@ -82,7 +80,7 @@ style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: '
 position: 'absolute', top: -5, right: -5,
 minWidth: 16, height: 16, borderRadius: 20,
 background: 'linear-gradient(135deg,#ff6b9d,#a78bfa)',
-display: 'flex', alignItems: 'center', justifyContent: 'space-center',
+display: 'flex', alignItems: 'center', justifyContent: 'center',
 fontSize: 8, fontWeight: 800, color: '#fff',
 padding: '0 4px', border: '2px solid #050d1a',
 boxShadow: '0 0 10px rgba(255, 107, 157, 0.4)'

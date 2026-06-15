@@ -3,7 +3,7 @@
 "use client"
 
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabase, PERFIL_COLS } from '@/lib/supabase'
 
 // Tipos, Constantes y Estilos
 import type { Usuario, Obra, Stats, ToastItem, Tab } from './utils/types'
@@ -87,7 +87,7 @@ export default function Perfil() {
       if (!userData) { window.location.href = '/'; return }
       setUser(userData)
 
-      const { data: p } = await supabase.from('Usuarios').select('*').eq('id', userData.id).single()
+      const { data: p } = await supabase.from('Usuarios').select(PERFIL_COLS).eq('id', userData.id).single()
       if (p) {
         setPerfil(p); setBio(p.bio || ''); setUsername(p.username || '')
         setSocialTwitter(p.social_twitter || ''); setSocialInstagram(p.social_instagram || '')
@@ -99,7 +99,7 @@ export default function Perfil() {
         setTipoText(p.tipo || 'fan')
       } 
 
-      const { data: obrasData } = await supabase.from('obras').select('*').eq('usuario_id', userData.id).order('created_at', { ascending: false })
+      const { data: obrasData } = await supabase.from('obras').select('*, Usuarios(username)').eq('usuario_id', userData.id).order('created_at', { ascending: false })
       setObras(obrasData || [])
 
       const { data: likesData } = await supabase.from('likes').select('obra_id, obras(*, Usuarios(username))').eq('usuario_id', userData.id)
@@ -200,7 +200,9 @@ export default function Perfil() {
     if (upErr) { toast('Error al subir banner', 'err'); setSubiendoBanner(false); return }
     const { data: { publicUrl } } = supabase.storage.from('Banners').getPublicUrl(path)
     const urlFinal = `${publicUrl}?v=${Date.now()}`
+    await supabase.from('Usuarios').update({ banner_url: urlFinal }).eq('id', user.id)
     setBannerUrl(urlFinal)
+    setPerfil(prev => prev ? { ...prev, banner_url: urlFinal } : prev)
     toast('Banner actualizado'); setSubiendoBanner(false)
   }
 

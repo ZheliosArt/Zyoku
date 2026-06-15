@@ -15,7 +15,7 @@ const { data } = await supabase
 .select('*')
 .eq('seguidor_id', currentUserId)
 .eq('seguido_id', targetUserId)
-.single();
+.maybeSingle();
 
 setIsFollowing(!!data);
 setLoading(false);

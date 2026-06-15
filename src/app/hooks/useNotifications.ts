@@ -19,33 +19,24 @@ export const useNotifications = (userId: string | undefined) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // LOG 1: Verificamos si el hook detecta al usuario
-  console.log("useNotifications init, userId:", userId);
-
   const fetchNotifications = async () => {
-    if (!userId) {
-      console.log("fetchNotifications cancelado: no hay userId"); // LOG 2
-      return;
-    }
-
-    console.log("Fetching notifications para el usuario:", userId); // LOG 3
+    if (!userId) return;
 
     const { data, error } = await supabase
       .from('notificaciones')
       .select(`
         *,
-        emisor:Usuarios!emisor_id(username) 
-      `) // Corregido a "Usuarios" que es el nombre real de tu tabla
+        emisor:Usuarios!emisor_id(username)
+      `)
       .eq('receptor_id', userId)
       .order('created_at', { ascending: false })
       .limit(20);
 
     if (error) {
-      console.error("Error fetching notifs:", error); // LOG 4
+      console.error("Error al cargar notificaciones:", error.message);
     }
 
     if (data) {
-      console.log("Fetch notifs EXITOSO, data:", data); // LOG 5
       setNotifications(data as Notification[]);
       setUnreadCount(data.filter((n: any) => !n.leido).length);
     }
@@ -57,8 +48,6 @@ export const useNotifications = (userId: string | undefined) => {
 
     fetchNotifications();
 
-    console.log("Configurando suscripción Realtime para:", userId); // LOG 6
-
     const channel = supabase
       .channel(`notifs-${userId}`)
       .on(
@@ -69,17 +58,13 @@ export const useNotifications = (userId: string | undefined) => {
           table: 'notificaciones',
           filter: `receptor_id=eq.${userId}`,
         },
-        (payload) => {
-          console.log("¡EVENTO REALTIME INSERT RECIBIDO!", payload); // LOG 7
+        () => {
           fetchNotifications();
         }
       )
-      .subscribe((status) => {
-        console.log("Estado de la suscripción Realtime:", status); // LOG EXTRA
-      });
+      .subscribe();
 
     return () => {
-      console.log("Removiendo canal Realtime"); // LOG 8
       supabase.removeChannel(channel);
     };
   }, [userId]);

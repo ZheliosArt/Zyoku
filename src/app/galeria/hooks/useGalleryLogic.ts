@@ -38,13 +38,13 @@ const nuevoConteo = yaLiked ? Math.max(0, (obra.likes_count || 0) - 1) : (obra.l
 setLikesData(prev => ({ ...prev, [obra.id]: !yaLiked }))
 setObras(prev => prev.map(o => o.id === obra.id ? { ...o, likes_count: nuevoConteo } : o))
 
-// 2. Persistencia en Base de Datos
+// 2. Persistencia en Base de Datos.
+// El contador likes_count lo mantiene un trigger en la tabla `likes` (no se escribe desde el cliente).
 if (yaLiked) {
 await supabase.from('likes').delete().eq('usuario_id', user.id).eq('obra_id', obra.id)
 } else {
 await supabase.from('likes').insert({ usuario_id: user.id, obra_id: obra.id })
 }
-await supabase.from('obras').update({ likes_count: nuevoConteo }).eq('id', obra.id)
 
 // 3. Devolvemos la obra actualizada para sincronizar el Modal
 return { ...obra, likes_count: nuevoConteo }

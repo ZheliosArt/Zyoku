@@ -7,7 +7,7 @@ import { SupernovaIcon } from './SupernovaIcon';
 interface Notification {
 id: string | number;
 leido: boolean;
-tipe?: string; 
+tipo?: string;
 emisor?: {
 username: string;
 };
@@ -132,7 +132,7 @@ wordBreak: 'break-word'
 }}>
 <b style={{ color: '#00cfff' }}>@{n.emisor?.username || 'usuario'}</b> 
 <br />
-{n.tipe === 'follow' ? 'comenzó a seguirte' : 'interactuó con tu contenido'}
+{n.tipo === 'follow' ? 'comenzó a seguirte' : 'interactuó con tu contenido'}
 </p>
 <span style={{ color: '#5a86a8', fontSize: 11, display: 'block', marginTop: 6 }}>hace un momento</span>
 </div>
